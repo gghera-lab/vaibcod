@@ -26,3 +26,14 @@ kabinet/test/audit/
 kabinet/test/shots/
 kabinet/work/redesign/
 kabinet/work/precheck/
+
+# секреты и кэш
+*.pem
+*.key
+*secret*.json
+*token*.txt
+credentials*
+.cache/
+__pycache__/
+.npm/
+.remotion/
