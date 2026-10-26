@@ -37,3 +37,4 @@ credentials*
 __pycache__/
 .npm/
 .remotion/
+!.env.example
