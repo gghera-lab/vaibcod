@@ -1,0 +1,13 @@
+node_modules/
+dist/
+data/
+.env
+.env.local
+*.log
+.cache/
+storage/tmp/
+storage/cache/
+coverage/
+.DS_Store
+# Аудиофайлы большие: генерируются (npm run audio:synthesize) или загружаются в хранилище/CDN
+storage/audio/**/*.mp3

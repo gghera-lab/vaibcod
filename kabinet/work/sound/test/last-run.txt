@@ -1,0 +1,41 @@
+PASS SFX загружен · {"ctx":"none","theme":null,"tension":0,"mstate":"calm","I":0,"amb":false,"speaking":false,"muted":false,"au2routed":false}
+PASS AudioContext НЕ создан до жеста · создано: 0
+PASS Старый баннер «Со звуком?» скрыт · none
+PASS Кнопка звука на стартовом экране
+PASS AudioContext создан после жеста (ровно один) · 1
+PASS Контекст running · running
+PASS Тема меню · menu
+PASS Музыка меню звучит (rms>0) · {"pk":0.089,"rms":0.012}
+PASS Все звуки библиотеки слышны (59) · все
+PASS Нет перегруза (peak ≤ 0.99) · max 0.55
+PASS Кошачьи голоса звучат у всех · {"kogtev":0.0425,"asya":0.0558,"gen":0.0453,"baba":0.0405,"blog":0.055,"boss":0.0462,"ten":0.02,"d_tvs":0.0946,"me":0.0461}
+PASS Профили голосов различаются · kogtev:185Hz/0.92 asya:470Hz/1.22 gen:138Hz/0.80/хрип blog:600Hz/1.50 ten:150Hz/0.85/шёпот zam:280Hz/1.16 mother:400Hz/1.22 m_starec:150Hz/0.90/хрип
+PASS Присяга: тема oath · {"vis":true,"theme":"oath"}
+PASS Карточки пройдены · card:Итоги выборов | card:Присяга | card:Первые слова
+PASS Хук: смена листа → paper.page/sheet · 6
+PASS Хук: выбор варианта → ui.select · 6
+PASS Хук: подпись → paper.sign · 4
+PASS Хук: печать → paper.stamp · 5
+PASS Хук: реплики → SFX.say · say:cik say:ks say:sfspk say:officer say:speaker say:ks
+PASS Тема в игре — calm/tense/crisis/… · {"ctx":"running","theme":"calm","tension":0.15,"mstate":"calm","I":0.35,"amb":true,"fam":"dev_paper","speaking":false,"muted":false,"au2routed":true}
+PASS Эмбиент кабинета включается · dev_paper
+PASS «Озвучка 2.0» перенаправлена в движок
+PASS Голосование: vote.start · vote
+PASS Голосование: тики подсчёта · 38
+PASS Голосование: итог vote.pass
+PASS Голосование: тема vote · vote
+PASS Выборы: тики и итог elect.win/lose · 26
+PASS Панель звука в меню (5 ползунков), старая .vol2 убрана · {"p21":true,"old":false,"sliders":5}
+PASS Громкость сохраняется в localStorage · {"v":1,"muted":false,"master":0.8,"music":0.35,"sfx":0.8,"voice":0.75,"amb":0.55,"meow":true,"tts":true}
+PASS Mute: SFX + PREF.sound + localStorage · {"m":true,"pref":false,"ls":true}
+PASS При mute тишина (хвосты < -46 дБ) · {"pk":0,"rms":0}
+PASS Снятие mute
+PASS Клавиша S (старый переключатель) синхронизирована
+PASS Телефон: кнопки, гудки, голос · disp=undefined num=214 play:ui.close play:ui.deny tone:680 play:phone.key tone:425 play:phone.ringback play:ui.open play:ui.open say:minfin
+PASS Живая озвучка: пакет подменяет мяу по тексту · say:kogtev clip:t1 speaking=true
+PASS SFX.scene("night")
+PASS Итоги срока: тема termEnd/finale · finaleBad
+PASS За всю сессию один AudioContext · 1
+PASS Нет ошибок консоли · 
+
+ИТОГ: 39/39 проверок пройдено

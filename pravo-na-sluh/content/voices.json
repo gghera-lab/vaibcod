@@ -1,0 +1,53 @@
+{
+  "_comment": "Профили голосов. quality: beta — техническая озвучка для тестирования; production — для публичного запуска. hidden: true — голос не показывается в приложении (озвучку можно пересоздать скриптами, но в БД и плеер она не попадает). Лицензию на коммерческое использование проверять до публикации.",
+  "voices": [
+    {
+      "id": "onecore-pavel",
+      "provider": "windows-onecore",
+      "providerVoice": "Pavel",
+      "title": "Павел",
+      "description": "Мужской голос, бета-версия (системный синтезатор Windows)",
+      "gender": "male",
+      "quality": "beta",
+      "default": false,
+      "hidden": true,
+      "license": "Голос Microsoft Pavel из состава Windows. Используется только для технической беты и внутреннего тестирования; перед публичным коммерческим запуском заменить на лицензированный TTS (SpeechKit/SaluteSpeech) или запись диктора."
+    },
+    {
+      "id": "onecore-irina",
+      "provider": "windows-onecore",
+      "providerVoice": "Irina",
+      "title": "Ирина",
+      "description": "Женский голос, бета-версия (системный синтезатор Windows)",
+      "gender": "female",
+      "quality": "beta",
+      "default": false,
+      "hidden": true,
+      "license": "Голос Microsoft Irina из состава Windows. Только для технической беты и тестирования."
+    },
+    {
+      "id": "speechkit-ermil",
+      "provider": "yandex-speechkit",
+      "providerVoice": "ermil",
+      "role": "neutral",
+      "title": "Ермил (SpeechKit)",
+      "description": "Мужской нейросетевой голос Yandex SpeechKit — основной голос аудиокниги",
+      "gender": "male",
+      "quality": "production",
+      "default": true,
+      "license": "Коммерческое использование синтезированной речи — по условиям Yandex Cloud/AI Studio. Проверить условия перед запуском."
+    },
+    {
+      "id": "speechkit-alena",
+      "provider": "yandex-speechkit",
+      "providerVoice": "alena",
+      "role": "neutral",
+      "title": "Алёна (SpeechKit)",
+      "description": "Женский нейросетевой голос Yandex SpeechKit",
+      "gender": "female",
+      "quality": "production",
+      "default": false,
+      "license": "Коммерческое использование синтезированной речи — по условиям Yandex Cloud/AI Studio. Проверить условия перед запуском."
+    }
+  ]
+}

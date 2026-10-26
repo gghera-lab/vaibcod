@@ -1,0 +1,180 @@
+{
+ "checks": [
+  {
+   "name": "offline: загрузка < 3 с",
+   "pass": true,
+   "info": {
+    "loadMs": 375
+   }
+  },
+  {
+   "name": "offline: стартовый экран с кнопками",
+   "pass": true,
+   "info": {
+    "start": true,
+    "btns": 3,
+    "fonts": [
+     "Balsamiq Sans",
+     "PT Sans",
+     "PT Serif",
+     "Press Start 2P",
+     "Kab Label"
+    ],
+    "menuVisible": false
+   }
+  },
+  {
+   "name": "offline: шрифты встроены",
+   "pass": true,
+   "info": [
+    "Balsamiq Sans",
+    "PT Sans",
+    "PT Serif",
+    "Press Start 2P",
+    "Kab Label"
+   ]
+  },
+  {
+   "name": "Q13: «Меню» скрыто на старте",
+   "pass": true
+  },
+  {
+   "name": "offline: нет ошибок JS",
+   "pass": true,
+   "info": []
+  },
+  {
+   "name": "Q3: битое сохранение — старт без «Продолжить», без чёрного экрана",
+   "pass": true,
+   "info": {
+    "start": true,
+    "cont": false,
+    "btns": 3
+   }
+  },
+  {
+   "name": "Q3: нет pageerror",
+   "pass": true,
+   "info": []
+  },
+  {
+   "name": "Q7: кандидат выбирается с клавиатуры",
+   "pass": true
+  },
+  {
+   "name": "звук: движок SFX есть, хуки моушна озвучены",
+   "pass": true,
+   "info": {
+    "sfx": true,
+    "st": {
+     "ctx": "running",
+     "theme": "oath",
+     "tension": 0.14,
+     "mstate": "calm",
+     "I": 0,
+     "amb": false,
+     "fam": "pov",
+     "speaking": false,
+     "muted": false,
+     "au2routed": true
+    },
+    "alias": [
+     true,
+     true,
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "name": "ПК: прохождение 140 шагов",
+   "pass": true,
+   "info": {
+    "steps": 139,
+    "st": {
+     "dec": 13,
+     "week": 14,
+     "term": 1
+    },
+    "mouse": {
+     "inaug-signature": 1,
+     "inaug-stamp-zone": 2,
+     "inaug-towork": 1,
+     "lines-skip": 38,
+     "sheet-signature:report": 2,
+     "sheet-stamp:report": 4,
+     "modal-strike:Послание Федеральному собранию": 1,
+     "modal-signature:Послание Федеральному собранию": 1,
+     "modal-seal:Послание Федеральному собранию": 1,
+     "modal-primary:Послание Федеральному собранию": 1
+    },
+    "stuck": []
+   }
+  },
+  {
+   "name": "ПК: средний кадр ≤ 33 мс",
+   "pass": true,
+   "info": {
+    "avg": 20.5,
+    "p95": 33.4
+   }
+  },
+  {
+   "name": "ПК: нет ошибок JS за прохождение",
+   "pass": true,
+   "info": []
+  },
+  {
+   "name": "телефон: прохождение 70 шагов",
+   "pass": true,
+   "info": {
+    "steps": 69,
+    "mouse": {
+     "inaug-signature": 1,
+     "inaug-stamp-zone": 2,
+     "inaug-towork": 1,
+     "lines-skip": 19,
+     "sheet-signature:report": 1,
+     "sheet-stamp:report": 2,
+     "modal-strike:Послание Федеральному собранию": 1,
+     "modal-signature:Послание Федеральному собранию": 1,
+     "modal-seal:Послание Федеральному собранию": 1,
+     "modal-primary:Послание Федеральному собранию": 1
+    }
+   }
+  },
+  {
+   "name": "телефон: нет горизонтальной прокрутки",
+   "pass": true
+  },
+  {
+   "name": "телефон: нет ошибок JS",
+   "pass": true,
+   "info": []
+  }
+ ],
+ "pc": {
+  "rec": {
+   "steps": 139,
+   "ends": [],
+   "mouse": {
+    "inaug-signature": 1,
+    "inaug-stamp-zone": 2,
+    "inaug-towork": 1,
+    "lines-skip": 38,
+    "sheet-signature:report": 2,
+    "sheet-stamp:report": 4,
+    "modal-strike:Послание Федеральному собранию": 1,
+    "modal-signature:Послание Федеральному собранию": 1,
+    "modal-seal:Послание Федеральному собранию": 1,
+    "modal-primary:Послание Федеральному собранию": 1
+   }
+  },
+  "fr": {
+   "avg": 20.5,
+   "p95": 33.4
+  }
+ },
+ "pass": 15,
+ "total": 15
+}

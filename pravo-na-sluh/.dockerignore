@@ -1,0 +1,8 @@
+node_modules
+**/node_modules
+data
+storage
+.cache
+.env
+apps/web/dist
+.git

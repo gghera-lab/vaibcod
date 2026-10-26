@@ -1,0 +1,106 @@
+<style id="p21-fixes">
+/* ================= ПАКЕТ 21 · ПРАВКИ ПО СКРИНАМ (2026-10-26) ================= */
+/* 3 · тост: моушн-рамка подменяла фон картинкой — текст ложился на кремовую карточку */
+html body #toast{background-color:#15131f!important;color:#f4ecd8!important;text-shadow:0 1px 0 #000}
+html body #toast.p21tf{background-color:#15131f!important}
+/* 4 · значок «Скрыто» на эффектах: был без фона, белое на кремовом конверте */
+html body #fx>.p21q{filter:none!important;opacity:1!important;background:linear-gradient(#3a3550,#221f30)!important;box-shadow:0 0 0 2px #b9a8e0,0 0 0 4px #000,0 10px 26px rgba(0,0,0,.55)!important;color:#f1ecff!important}
+html body #fx>.p21q span{color:#f1ecff!important;font:700 26px/1 var(--k-f-ui,var(--f-body,sans-serif))!important}
+html body #fx>.p21q small{font:700 12px/1.1 var(--k-f-ui,var(--f-body,sans-serif))!important;letter-spacing:.06em;text-transform:uppercase;color:#d9d0f5!important;opacity:1!important}
+/* 5 · дисплей телефона: класс .ring совпадал с кольцевым индикатором 260×260 */
+html body .phdisp.ring{width:auto!important;height:auto!important;margin:0!important}
+/* 6 · после выбора невыбранные варианты (в т. ч. закрытые и «оплатить») исчезают целиком, без дыр и зачёркнутых хвостов */
+html body #opts>.opt.gone{opacity:0!important;max-height:0!important;min-height:0!important;padding-top:0!important;padding-bottom:0!important;margin-top:0!important;margin-bottom:0!important;border-width:0!important;overflow:hidden!important;pointer-events:none!important;text-decoration:none!important;display:none!important}
+html body #opts>.opt.gone *{text-decoration:none!important}
+/* аудит 2026-10-26: мелкие подписи и моноширинный шрифт письма */
+html body .b8f .tag{font-size:8px!important;padding:2px 4px!important}
+html body .envletter .dh,html body .envburn{font-size:clamp(8px,.6vw,10px)!important}
+html body .envtx{font-family:'Courier New','Liberation Mono','DejaVu Sans Mono',monospace!important}
+/* аудит 2026-10-26 · телефон */
+html body #p21last{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:760px){
+  html body #dbar{overflow-x:auto;scrollbar-width:none}html body #dbar::-webkit-scrollbar{display:none}
+  html body #dbar button{flex:1 0 auto;min-width:58px;font-size:11px!important;letter-spacing:0;white-space:nowrap;padding:5px 6px}
+  html body #bar button,html body #bsoundt,html body #dacts i{font-size:7.5px!important}
+  html body .b8h span,html body .dsphid span,html body .dsphid b{font-size:11px!important}
+  html body .b8f em{font-size:11px!important}
+  html body #bdrop{font-size:12px!important}
+  html body #p21last{min-height:30px}
+  html body .ballotwrap.b11 #bldos{margin-bottom:12px}
+  html body .ballotwrap.b11 .bfoot{background:linear-gradient(rgba(11,10,18,0),#0b0a12 22px)}
+}
+</style>
+<script id="p21-fixes-js">
+/* ================= ПАКЕТ 21 · ПРАВКИ ПО СКРИНАМ: рисунки сцен ================= */
+(() => {
+'use strict';
+const inBunker = () => { try { return typeof S !== 'undefined' && S && S.role === 'pres' && hasF(S, 'bunker_mode'); } catch (e) { return false; } };
+
+/* ---------- 2 · Совет Федерации: сенаторы — нормальные коты, как в Думе ---------- */
+const SFF = ['#e58a3a', '#8d93a6', '#efe0c4', '#c98a4b', '#6f7f99', '#d8c27a', '#9a9286', '#b85c2a'];
+BG.court = function (c) {
+  R(c, 0, 0, W, H, '#2a1a20'); panelWall(c, 0, 0, W, 150, 6, '#3a2228', '#4e2d34', '#6b4048');
+  emblem(c, 192, 34, 18); for (const x of [60, 324]) { R(c, x - 10, 0, 20, 150, '#e8e2d4'); R(c, x + 6, 0, 4, 150, '#c9c2b2'); }
+  // ряд кресел с высокими спинками
+  for (let i = 0; i < 7; i++) { const x = 98 + i * 30; R(c, x - 3, 60, 22, 38, '#5a1a24'); R(c, x - 3, 60, 22, 2, '#8a2a34'); frame(c, x - 3, 60, 22, 38, '#3a0e16'); }
+  // сенаторы: голова, плечи, костюм — по центру председатель
+  for (let i = 0; i < 7; i++) {
+    const x = 99 + i * 30, chair = i === 3, y = chair ? 66 : 70;
+    R(c, x - 1, y + 13, 18, 16, chair ? '#1c1c2a' : ['#26304a', '#2a2a33', '#3a2a3a'][i % 3]);   // пиджак
+    R(c, x + 6, y + 13, 4, 6, '#f4ecd8'); R(c, x + 7, y + 15, 2, 6, chair ? '#d9b45a' : '#a8202e'); // рубашка и галстук
+    window.mid17(c, x + 1, y, SFF[i], null);
+    if (chair) { R(c, x + 3, y - 3, 10, 2, '#d9b45a'); P(c, x + 5, y - 4, '#f2d48a'); P(c, x + 10, y - 4, '#f2d48a'); }
+  }
+  R(c, 0, 150, W, 66, '#1a1014'); rug(c, 136, H, 172, 212, 120, 264);
+};
+try { for (const k of Object.keys(CACHE)) if (/court/.test(k)) delete CACHE[k]; } catch (e) {}
+
+/* ---------- 7 · бункер: вместо ночного города за «окном» — стена мониторов с камерами ---------- */
+const FEEDS = ['corr', 'noise', 'map', 'graph', 'street', 'crowd', 'gate', 'noise2', 'radar', 'corr2', 'graph2', 'map2'];
+function feed(c, x, y, w, h, kind, t) {
+  R(c, x, y, w, h, '#06100c');
+  const g = '#5fd08a', gd = '#1f5a3a', on = (Math.floor(t / 500) % 2) === 0;
+  if (/^corr/.test(kind)) { // коридор камерой сверху: сходящиеся линии, дверь, охранник
+    const cx = x + w / 2 + (kind === 'corr2' ? 4 : -3); line(c, x, y + h, cx - 4, y + h / 2 - 2, gd); line(c, x + w, y + h, cx + 4, y + h / 2 - 2, gd);
+    R(c, cx - 4, y + h / 2 - 8, 8, 8, '#0e2418'); frame(c, cx - 4, y + h / 2 - 8, 8, 8, gd);
+    if (kind === 'corr2') { const px = x + 6 + (Math.floor(t / 220) % (w - 12)); R(c, px, y + h - 10, 3, 7, g); P(c, px + 1, y + h - 12, g); }
+  } else if (/^noise/.test(kind)) { // помехи
+    let s = Math.floor(t / 90) * 7919 + (kind === 'noise2' ? 13 : 0); for (let i = 0; i < w * h / 6; i++) { s = (s * 1103515245 + 12345) & 0x7fffffff; P(c, x + s % w, y + (s >> 8) % h, (s & 4) ? '#9ab8a8' : '#3a5a4a'); }
+    const lw = txtW('НЕТ'); R(c, x + (w - lw) / 2 - 2, y + h / 2 - 4, lw + 4, 8, '#06100c'); txt(c, 'НЕТ', x + (w - lw) / 2, y + h / 2 - 2, '#c8e8d4');
+  } else if (/^map/.test(kind)) { // карта страны с очагами
+    line(c, x + 4, y + 8, x + w - 6, y + 5, gd); line(c, x + w - 6, y + 5, x + w - 3, y + h - 8, gd); line(c, x + w - 3, y + h - 8, x + 8, y + h - 4, gd); line(c, x + 8, y + h - 4, x + 4, y + 8, gd);
+    const pts = kind === 'map' ? [[.3, .4], [.6, .55], [.75, .3]] : [[.45, .6], [.2, .3]]; pts.forEach(([a, b], i) => { const px = x + a * w, py = y + b * h; R(c, px - 1, py - 1, 3, 3, (on || i) ? '#e0485a' : '#5a1a24'); });
+  } else if (/^graph/.test(kind)) { // графики: рейтинг падает, курс скачет
+    for (let i = 0; i < 6; i++) { const v = kind === 'graph' ? 0.8 - i * 0.11 : 0.4 + Math.sin(t / 700 + i) * 0.25; R(c, x + 4 + i * ((w - 8) / 6), y + h - 4 - v * (h - 10), 3, v * (h - 10), i > 3 ? '#e0485a' : g); }
+    R(c, x + 2, y + h - 4, w - 4, 1, gd);
+  } else if (kind === 'street') { // площадь ночью, редкие окна
+    for (let i = 0; i < 5; i++) { const bh = 8 + ((i * 37) % 12); R(c, x + 2 + i * (w / 5), y + h - bh - 3, w / 5 - 2, bh, '#0e2418'); if ((i + Math.floor(t / 900)) % 2) P(c, x + 4 + i * (w / 5), y + h - bh, '#c8e070'); }
+    R(c, x, y + h - 3, w, 3, '#123020');
+  } else if (kind === 'crowd') { // толпа у ограды
+    for (let i = 0; i < 5; i++) { const b = Math.round(Math.sin(t / 240 + i)); R(c, x + 3 + i * 6, y + h - 9 + b, 4, 6, '#2a6a4a'); R(c, x + 4 + i * 6, y + h - 12 + b, 2, 3, '#3a8a5a'); }
+    R(c, x, y + h - 4, w, 1, g); for (let k = 2; k < w; k += 4) R(c, x + k, y + h - 7, 1, 3, g);
+  } else if (kind === 'gate') { // КПП, шлагбаум
+    R(c, x + 4, y + h - 10, 6, 8, '#1f5a3a'); R(c, x + 10, y + h - 9, w - 16, 2, on ? '#e0485a' : '#f4ecd8');
+  } else if (kind === 'radar') { // радар
+    const cx = x + w / 2, cy = y + h / 2, r = Math.min(w, h) / 2 - 3; ell(c, cx, cy, r, r, '#0e2418'); line(c, cx - r, cy, cx + r, cy, gd); line(c, cx, cy - r, cx, cy + r, gd);
+    const a = t / 600; line(c, cx, cy, cx + Math.cos(a) * r, cy + Math.sin(a) * r, g); if (on) P(c, cx + r * .4, cy - r * .3, '#e0485a');
+  }
+  // развёртка и метка камеры
+  c.globalAlpha = .18; for (let k = y; k < y + h; k += 2) R(c, x, k, w, 1, '#000'); c.globalAlpha = 1;
+  if (kind === 'corr' || kind === 'crowd') { if (on) { ell(c, x + w - 5, y + 4, 1, 1, '#ff3a4a'); } }
+}
+function monitorWall(c, t) {
+  // 4×3 экрана в рамке, как в BG.rev_bunker
+  for (let i = 0; i < 12; i++) { const x = 116 + (i % 4) * 39, y = 20 + Math.floor(i / 4) * 34; feed(c, x, y, 36, 30, FEEDS[i], t + i * 137); frame(c, x, y, 36, 30, '#2a2e34'); }
+  // стекло: блик
+  c.globalAlpha = .06; R(c, 116, 20, 154, 6, '#ffffff'); c.globalAlpha = 1;
+}
+if (typeof windowCity === 'function') {
+  const WC0 = windowCity;
+  windowCity = function (c, x, y, w, h, t, st, seed) {
+    if (inBunker()) { if (x === 118) monitorWall(c, t); return; } // второй вызов (x=194) пропускаем: стена уже нарисована
+    return WC0.apply(this, arguments);
+  };
+}
+})();
+</script>

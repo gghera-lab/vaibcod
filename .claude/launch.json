@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pravo-api",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "pravo-na-sluh/apps/server", "run", "dev"],
+      "port": 8080
+    },
+    {
+      "name": "pravo-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "pravo-na-sluh/apps/web", "run", "dev", "--", "--port", "5173", "--strictPort"],
+      "port": 5173
+    },
+    {
+      "name": "pravo-ref-check",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--env-file=C:/Users/danil/AppData/Local/Temp/claude/C--Users-danil-Desktop--------/3d86bba4-b624-4e51-9851-8f4e13adf11c/scratchpad/ref-check.env", "pravo-na-sluh/node_modules/tsx/dist/cli.mjs", "pravo-na-sluh/apps/server/src/index.ts"],
+      "port": 8090
+    }
+  ]
+}

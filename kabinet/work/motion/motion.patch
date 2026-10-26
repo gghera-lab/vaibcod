@@ -1,0 +1,880 @@
+diff --git a/base/kabinet_hd_5.html b/work/motion/kabinet.html
+index 6379c28..4b04fe6 100644
+--- a/base/kabinet_hd_5.html
++++ b/work/motion/kabinet.html
+@@ -12193,7 +12193,7 @@ function rawScene(c, t, rev) {
+   let hit = null, focus = null, eyes = null; const p = POS[bg] || [160, 100];
+   if (bg === 'print') { R(c, 212, 120, 148, 16, '#7a1e2e'); for (let k = 0; k < 12; k++) { const xx = 360 - ((t / 30 + k * 26) % 160); if (xx > 212 && xx < 354) R(c, xx, 126, 18, 4, '#f4ecd8'); } }
+   if (SC.cast) eventCast(c, t, SC.cast, p);
+-  if (who && CH[who] && CH[who].pal) { const slide = PREF.rm ? 0 : Math.max(0, 1 - (t - SC.t0) / 450); const dx = Math.round(Math.pow(slide, 2) * 140); drawActor(c, { c: who, x: p[0] + dx, y: p[1], s: 2 }, t, true); hit = [p[0], p[1], 68, 66]; eyes = [p[0] + 10, p[1] + 8, 48, 20]; focus = [p[0] + 32, p[1] + 20]; }
++  if (who && CH[who] && CH[who].pal) { const slide = PREF.rm ? 0 : Math.max(0, 1 - (t - SC.t0) / 450); const st21 = window.P21 && P21.enter ? P21.enter(t - SC.t0) : null; /* ПАКЕТ 21 · МОУШН · M13: вход шагом */ const dx = st21 ? st21.dx : Math.round(Math.pow(slide, 2) * 140); drawActor(c, { c: who, x: p[0] + dx, y: p[1] + (st21 ? st21.dy : 0), s: 2 }, t, true); hit = [p[0], p[1], 68, 66]; eyes = [p[0] + 10, p[1] + 8, 48, 20]; focus = [p[0] + 32, p[1] + 20]; }
+   if (FGK[bg]) c.drawImage(fgCanvas(FGK[bg]), 0, 0);
+   worldOverlay(c, t, role, 'scene');
+   if (SC.mode === 'card' && who) revOverlay(c, meId(), t);
+@@ -12214,7 +12214,7 @@ function renderScene(t) {
+   vctx.setTransform(1, 0, 0, 1, 0, 0); vctx.fillStyle = '#000'; vctx.fillRect(0, 0, W, H);
+   if (th.z > 1.001 && info.focus) {
+     const [fx, fy] = info.focus, p = Math.min(1, (th.z - 1) / 5); const sx = fx + (W / 2 - fx) * p, sy = fy + (H / 2 - fy) * p;
+-    const shk = th.sev >= 2 ? (th.sev - 1) * 1.6 * th.u * th.z : 0; const jx = shk ? (Math.random() - .5) * shk : 0, jy = shk ? (Math.random() - .5) * shk : 0;
++    const shk = th.sev >= 2 ? (th.sev - 1) * 1.6 * th.u * th.z : 0; const jx = shk ? (window.P21 && P21.jit ? P21.jit(t, 0, shk) : (Math.random() - .5) * shk) : 0, jy = shk ? (window.P21 && P21.jit ? P21.jit(t, 1, shk) : (Math.random() - .5) * shk) : 0; /* ПАКЕТ 21 · МОУШН · M14: тряска синусами, целые px */
+     const ox = sx - fx * th.z + jx, oy = sy - fy * th.z + jy; LASTZ = th.z;
+     vctx.drawImage(offC, Math.round(ox), Math.round(oy), Math.round(W * th.z), Math.round(H * th.z));
+     if (th.k !== SC.phase) { SC.phase = th.k; flashScreen(.7); AU.sfx('heart'); }
+@@ -13531,8 +13531,8 @@ async function showVote8(scr, v, last, dur) {
+     <div class="vbar"><i id="vfill"></i><em style="left:${v.need / v.of * 100}%">ПОРОГ · ${v.need}${pc}</em></div>
+     <div class="vres ${v.pass ? 'ok' : 'bad'}" id="vres" hidden><b>${v.pass ? 'Принято' : 'Не принято'}</b><p>${esc(voteText(v, sf))}</p></div><div id="opts"></div></div>`;
+   sh.classList.remove('swap'); void sh.offsetWidth; sh.classList.add('swap');
+-  const t0 = performance.now(), D = PREF.rm ? 10 : (dur >= 1000 ? 2200 : 800); /* M15: дольше и с «саспенсом» */
+-  await new Promise(ok => { const step = (t) => { const p = (window.M20 ? M20.suspense : (x => x))(Math.min(1, (t - t0) / D)); vo.p = p; $('vfor').textContent = Math.round(v.for * p); $('vag').textContent = Math.round(v.against * p); $('vfill').style.width = (v.for * p / v.of * 100) + '%'; if (p < 1) requestAnimationFrame(step); else ok(); }; requestAnimationFrame(step); });
++  const t0 = performance.now(), D = PREF.rm ? 10 : (dur >= 1000 ? 2200 : 800) * (S && S.term > 1 ? .6 : 1); /* M15: дольше и с «саспенсом»; ПАКЕТ 21 · МОУШН · U3: после I срока короче на 40% */
++  await new Promise(ok => { const step = (t) => { const p = (window.M20 ? M20.suspense : (x => x))(U.skip ? 1 : Math.min(1, (t - t0) / D)); /* ПАКЕТ 21 · МОУШН · B3 */ vo.p = p; $('vfor').textContent = Math.round(v.for * p); $('vag').textContent = Math.round(v.against * p); $('vfill').style.width = (v.for * p / v.of * 100) + '%'; if (p < 1) requestAnimationFrame(step); else ok(); }; requestAnimationFrame(step); });
+   $('vres').hidden = false; AU.sfx(v.pass ? 'up' : 'down'); flashScreen(.25);
+   const vd = sh.querySelector('.vdone'); if (vd) vd.insertAdjacentHTML('beforeend', `<div class="${v.pass ? 'ok' : 'bad'}">${esc(v.stage)}: «за» ${v.for}${pc} — ${v.pass ? 'принято' : 'не принято'}</div>`);
+   if (!last) { await sleep(PREF.rm ? 50 : dur > 1000 ? 1100 : 700); return; }
+@@ -14483,9 +14483,10 @@ showVotes = async function (scr, res) {
+     sh.classList.remove('swap'); void sh.offsetWidth; sh.classList.add('swap');
+     sh.querySelectorAll('[data-vp]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const i = +b.dataset.vp; if (i > far) return; AU.sfx('page'); render(i, false).then(addNext); });
+     if (animate) {
+-      const t0 = performance.now(), D = PREF.rm ? 10 : 2000; /* M15 */
+-      await new Promise(ok => { const step = (t) => { const p = (window.M20 ? M20.suspense : (x => x))(Math.min(1, (t - t0) / D)); vo.p = p; const a = $('vfor'), b = $('vag'), f = $('vfill'); if (a) a.textContent = Math.round(v.for * p); if (b) b.textContent = Math.round(v.against * p); if (f) f.style.width = (v.for * p / v.of * 100) + '%'; if (p < 1) requestAnimationFrame(step); else ok(); }; requestAnimationFrame(step); });
++      const t0 = performance.now(), D = PREF.rm ? 10 : 2000 * (S && S.term > 1 ? .6 : 1); /* M15; ПАКЕТ 21 · МОУШН · U3 */
++      await new Promise(ok => { const step = (t) => { const p = (window.M20 ? M20.suspense : (x => x))(U.skip ? 1 : Math.min(1, (t - t0) / D)); /* ПАКЕТ 21 · МОУШН · B3 */ vo.p = p; const a = $('vfor'), b = $('vag'), f = $('vfill'); if (a) a.textContent = Math.round(v.for * p); if (b) b.textContent = Math.round(v.against * p); if (f) f.style.width = (v.for * p / v.of * 100) + '%'; if (p < 1) requestAnimationFrame(step); else ok(); }; requestAnimationFrame(step); });
+       const r = $('vres'); if (r) r.hidden = false; AU.sfx(v.pass ? 'up' : 'down'); flashScreen(.25);
++      U.skip = false; /* ПАКЕТ 21 · МОУШН · B3: промотка действует на одно чтение */
+     }
+   };
+   let resolveStep = null;
+@@ -18105,11 +18106,11 @@ new MutationObserver(ms => {
+   ms.forEach(m => {
+     if (m.type === 'attributes') { const el = m.target;
+       if (el.classList && el.classList.contains('stamp') && el.classList.contains('hit') && !el._m20) { el._m20 = 1;
+-        const reso = el.closest('.reso'); if (reso && /ДАВЛЕНИЕМ/.test(el.textContent) && ON()) { const w = document.createElement('div'); w.className = 'm20st2'; w.innerHTML = el.outerHTML; const s2 = w.firstElementChild; s2.classList.remove('hit'); s2._m20 = 1; s2.style.cssText = el.style.cssText; const host = el.parentNode; const sb = document.createElement('div'); sb.style.cssText = `position:absolute;right:${getComputedStyle(el).right};bottom:${getComputedStyle(el).bottom};width:${el.offsetWidth}px;height:${el.offsetHeight}px;pointer-events:none`; sb.appendChild(w); host.appendChild(sb); setTimeout(() => { s2.classList.add('hit'); try { AU.sfx('stamp'); } catch (e) {} const sh = q('#sheet'); restart(sh, 'shake'); }, 330); }
++        const reso = el.closest('.reso'); if (reso && /ДАВЛЕНИЕМ/.test(el.textContent) && ON()) { const w = document.createElement('div'); w.className = 'm20st2'; w.innerHTML = stampSVG('ПОД ДАВЛЕНИЕМ', (el.textContent.match(/№\s*(\d+)/) || [])[1] || '') /* ПАКЕТ 21 · МОУШН · B7 */; const s2 = w.firstElementChild; s2.classList.remove('hit'); s2._m20 = 1; s2.style.cssText = el.style.cssText; const host = el.parentNode; const sb = document.createElement('div'); sb.style.cssText = `position:absolute;right:${getComputedStyle(el).right};bottom:${getComputedStyle(el).bottom};width:${el.offsetWidth}px;height:${el.offsetHeight}px;pointer-events:none`; sb.appendChild(w); host.appendChild(sb); setTimeout(() => { s2.classList.add('hit'); try { AU.sfx('stamp'); } catch (e) {} const sh = q('#sheet'); restart(sh, 'shake'); }, 330); }
+       } }
+     else m.addedNodes.forEach(n => { if (n.nodeType === 1 && n.classList.contains('bigerr')) setTimeout(vignette, 190); });
+   });
+-}).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
++}).observe(q('#sheet'), { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] }); /* ПАКЕТ 21 · МОУШН · B9: только лист */
+ 
+ /* ---------- M06 · смена листа: старый лист уходит в стопку ---------- */
+ const SS20 = showScreen;
+@@ -18117,7 +18118,7 @@ showScreen = function (scr) {
+   try {
+     const sh = q('#sheet'), fo = q('#folder');
+     if (ON() && sh && fo && sh.children.length && sh.offsetHeight > 40 && !document.querySelector('.m20ghost')) {
+-      const g = sh.cloneNode(true); g.removeAttribute('id'); qa('[id]', g).forEach(x => x.removeAttribute('id')); g.classList.remove('swap', 'shake'); g.classList.add('m20ghost');
++      const g = window.P21 && P21.sheetSnap ? P21.sheetSnap(sh) : sh.cloneNode(true); if (!g) return SS20.apply(this, arguments); g.removeAttribute('id'); /* ПАКЕТ 21 · МОУШН · B1: снимок только видимой части */ qa('[id]', g).forEach(x => x.removeAttribute('id')); g.classList.remove('swap', 'shake'); g.classList.add('m20ghost');
+       Object.assign(g.style, { left: sh.offsetLeft + 'px', top: sh.offsetTop + 'px', width: sh.offsetWidth + 'px', height: sh.offsetHeight + 'px' });
+       fo.appendChild(g); g.scrollTop = sh.scrollTop;
+       const mob = document.documentElement.classList.contains('mob');
+@@ -18144,6 +18145,7 @@ updDesk = function () {
+   return r;
+ };
+ function moneyRoll(from, to) {
++  if (window.P21 && P21.moneyRoll) return P21.moneyRoll(from, to); /* ПАКЕТ 21 · МОУШН · B4/M10 */
+   const up = to > from, id = ++DESK.roll; const host = q('#desk .m17h');
+   const coin = q('#desk .m17coin'); if (coin) once(coin, up ? 'm20up' : 'm20dn', 520);
+   const b0 = q('#desk .m17h b'); if (!up) once(b0, 'm20dn', 720);
+@@ -18154,6 +18156,7 @@ function moneyRoll(from, to) {
+ function threatStep(from, to) {
+   const t = q('#desk .m17thr'); if (!t) return;
+   if (to > from) { const s = t.querySelectorAll('s')[to - 1]; if (s) once(s, 'm20seg', 220); once(t, 'm20shake', 320); }
++  else if (window.P21 && P21.threatCool) P21.threatCool(t, from, to); /* ПАКЕТ 21 · МОУШН · M11 */
+ }
+ 
+ /* ---------- M12 · неделя и дата ---------- */
+@@ -18166,10 +18169,11 @@ updTop = function () {
+     const n = TURNS(S), w = Math.min(S.week, n), seg = q('#weekseg'), txt = q('#weektxt');
+     if (TOP.w != null && TOP.term === S.term && w === TOP.w + 1 && ON() && seg) {
+       const cells = seg.children; const done = cells[w - 2], now = cells[w - 1];
+-      if (done) once(done, 'm20fill', 260); if (now) setTimeout(() => once(now, 'm20hop', 160), 200);
++      /* ПАКЕТ 21 · МОУШН · B6: через element.animate — updTop() больше не стирает анимацию */
++      if (done) done.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 240, easing: 'steps(4,end)' }); if (now) setTimeout(() => { const n2 = seg.children[w - 1]; if (n2 && ON()) n2.animate([{ transform: 'translateX(-100%)' }, { transform: 'translate(-50%,-3px)' }, { transform: 'none' }], { duration: 140, easing: 'steps(3,end)' }); }, 200);
+       try { AU.sfx('sel'); } catch (e) {}
+     }
+-    if (txt && TOP.txt && txt.textContent !== TOP.txt && TOP.term === S.term) once(txt, 'm20flap', 220);
++    if (txt && TOP.txt && txt.textContent !== TOP.txt && TOP.term === S.term) { if (window.P21 && P21.dateFlap) P21.dateFlap(txt, TOP.txt); else once(txt, 'm20flap', 220); } /* ПАКЕТ 21 · МОУШН · M12 */
+     TOP.w = w; TOP.term = S.term; TOP.txt = txt ? txt.textContent : '';
+   } catch (e) {}
+   return r;
+@@ -18184,6 +18188,8 @@ function masks() {
+     x.putImageData(id, 0, 0); DIS.masks.push(c); }
+   DIS.tmp = document.createElement('canvas'); DIS.tmp.width = W; DIS.tmp.height = H; return DIS.masks;
+ }
++/* ПАКЕТ 21 · МОУШН · B8: маски растворения — заранее, в простое после старта */
++try { (window.requestIdleCallback || ((f) => setTimeout(f, 1200)))(() => { try { masks(); } catch (e) {} }, { timeout: 4000 }); } catch (e) {}
+ const RS20 = renderScene;
+ renderScene = function (t) {
+   try {
+@@ -18197,7 +18203,7 @@ renderScene = function (t) {
+     if (DIS.prev) {
+       const k = Math.floor((t - DIS.t0) / 30) + 1; // 8 шагов по 30 мс
+       if (k >= 8 || !ON()) DIS.prev = null;
+-      else { const m = masks()[k - 1], tc = DIS.tmp.getContext('2d'); tc.globalCompositeOperation = 'copy'; tc.drawImage(DIS.prev, 0, 0); tc.globalCompositeOperation = 'destination-in'; tc.drawImage(m, 0, 0); tc.globalCompositeOperation = 'source-over'; vctx.setTransform(1, 0, 0, 1, 0, 0); vctx.drawImage(DIS.tmp, 0, 0); }
++      else { const m = (window.P21 && P21.mask && P21.mask(k, SC.bg)) || masks()[k - 1] /* ПАКЕТ 21 · МОУШН · M13: жалюзи для улицы */, tc = DIS.tmp.getContext('2d'); tc.globalCompositeOperation = 'copy'; tc.drawImage(DIS.prev, 0, 0); tc.globalCompositeOperation = 'destination-in'; tc.drawImage(m, 0, 0); tc.globalCompositeOperation = 'source-over'; vctx.setTransform(1, 0, 0, 1, 0, 0); vctx.drawImage(DIS.tmp, 0, 0); }
+     }
+   } catch (e) { DIS.prev = null; }
+ };
+@@ -18238,6 +18244,7 @@ closeModal = function () {
+       bk.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' });
+       const a = g.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px)' }], { duration: 160, easing: 'cubic-bezier(.55,0,.75,.2)', fill: 'forwards' });
+       const kill = () => { g.remove(); bk.remove(); }; a.onfinish = kill; setTimeout(kill, 400);
++      requestAnimationFrame(() => { if (!M.hidden) kill(); }); /* ПАКЕТ 21 · МОУШН · B5: открылось новое окно — призрак убрать сразу */
+     }
+   } catch (e) {}
+   return CM20.apply(this, arguments);
+@@ -18290,5 +18297,754 @@ function revealEnd() {
+ })();
+ </script>
+ 
++<style id="p21-motion">
++/* ================= ПАКЕТ 21 · МОУШН · вторая очередь (ТЗ-М-2) =================
++   Только transform/opacity (кроме коротких clip-path на мелких элементах). Всё выключается body.rm и prefers-reduced-motion. */
++
++/* ПАКЕТ 21 · МОУШН · B2: на сенсорных экранах закрытая кнопка пропускает касание к родителю — «упирается» ловится по координатам */
++@media (hover:none){body:not(.rm) button[disabled]{pointer-events:none}}
++
++/* ПАКЕТ 21 · МОУШН · B10: пульс угрозы — opacity псевдоэлемента вместо filter */
++body:not(.rm) #desk .m17thr.t4 i,body:not(.rm) #desk .m17thr.t5 i{animation:none}
++body:not(.rm) #desk .m17thr:is(.t4,.t5) s.on{position:relative}
++body:not(.rm) #desk .m17thr:is(.t4,.t5) s.on::after{content:"";position:absolute;inset:0;border-radius:inherit;background:#fff;opacity:0;pointer-events:none;animation:p21pulse 1.2s ease-in-out infinite}
++body:not(.rm) #desk .m17thr.t5 s.on::after{animation-duration:.8s}
++@keyframes p21pulse{50%{opacity:.42}}
++/* B10: бесконечные циклы стола и листа стоят, пока открыто окно или вкладка скрыта */
++body.p21hold #app :is(.z13.ready,.m17thr s.on,#weekseg i.now,#phdisp.ring),body.p21hold #app :is(.z13.ready,.m17thr s.on)::before,body.p21hold #app :is(.z13.ready,.m17thr s.on)::after{animation-play-state:paused!important}
++
++/* ПАКЕТ 21 · МОУШН · B4: дельта денег — справа от суммы, обе стороны от одной линии */
++.m20delta.p21{bottom:auto}
++
++/* ПАКЕТ 21 · МОУШН · M10: барабан цифр */
++.p21drum{display:inline-flex;vertical-align:top;font-variant-numeric:tabular-nums}
++.p21dc{display:inline-block;height:1.1em;overflow:hidden;vertical-align:top}
++.p21ds{display:block;width:1ch;line-height:1.1em;word-break:break-all;white-space:normal;will-change:transform}
++
++/* ПАКЕТ 21 · МОУШН · M14: виньетка раздумья и смаз взгляда */
++.p21vig{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;background:radial-gradient(ellipse at center,transparent 38%,rgba(4,3,10,.9) 100%);will-change:opacity}
++.p21vig i{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(60,0,10,.55) 100%)}
++.p21smear{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:4}
++body.rm .p21vig,body.rm .p21smear{display:none}
++
++/* ПАКЕТ 21 · МОУШН · M16: сканер доклада, штрих неверной цифры */
++.p21scan{position:absolute;height:3px;pointer-events:none;z-index:3;background:#62c6bd;box-shadow:0 0 8px 2px rgba(98,198,189,.7),0 -14px 18px rgba(98,198,189,.18)}
++.p21strike{position:absolute;left:-2px;right:-2px;top:22%;height:60%;width:calc(100% + 4px);overflow:visible;pointer-events:none}
++.p21strike path{fill:none;stroke:#c8343c;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0;vector-effect:non-scaling-stroke}
++
++/* ПАКЕТ 21 · МОУШН · M18: латунный ползунок редакции, указ в полёте */
++.p21rail{position:absolute;left:0;top:0;width:100px;height:3px;background:linear-gradient(90deg,#94692a,#f3d58a,#94692a);transform-origin:0 50%;pointer-events:none}
++.p21dec{position:fixed;left:0;top:0;z-index:9100;pointer-events:none;transform-origin:50% 50%;background:#f5eddb;border:2px solid #1d1721;box-shadow:0 8px 18px rgba(0,0,0,.45);background-image:repeating-linear-gradient(0deg,transparent 0 9px,#d8ccb0 9px 10px);will-change:transform}
++
++/* ПАКЕТ 21 · МОУШН · M23: параллакс, блик по надписи, раскрытие панели, плашка звука */
++@media (hover:hover){body:not(.rm) .slant.p21px:hover canvas{transform:scale(1.06) translate(var(--px,0px),var(--py,0px));transition:transform .12s linear,filter .3s}}
++body:not(.rm) .sel-h.p21gl{position:relative;overflow:hidden}
++body:not(.rm) .sel-h.p21gl::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,246,210,.75) 50%,transparent 65%);mix-blend-mode:overlay;transform:translateX(-110%);animation:p21gleam .6s var(--e-paper) var(--gld,600ms) both}
++@keyframes p21gleam{to{transform:translateX(110%)}}
++.p21open{position:fixed;z-index:9050;pointer-events:none;background:#000;overflow:hidden}
++.p21open canvas{width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
++body:not(.rm) #snd2{animation:p21snd .26s cubic-bezier(.3,1.45,.5,1) .3s both}
++@keyframes p21snd{from{opacity:0;translate:0 40px}}
++
++/* ПАКЕТ 21 · МОУШН · M20: конверт ложится, сургуч трескается, клапан в 3D, письмо разворачивается, кромка огня */
++body:not(.rm) #devov.env10ov .envb{animation-duration:.4s;perspective:500px}
++body:not(.rm) #devov.env10ov .env10.open .envflap{animation:p21flap .5s cubic-bezier(.6,0,.4,1) .7s both;z-index:3;backface-visibility:visible}
++@keyframes p21flap{0%{transform:rotateX(0);z-index:3}50%{z-index:3}51%{z-index:0}100%{transform:rotateX(180deg);z-index:0}}
++body:not(.rm) #devov.env10ov .env10.open .envseal{animation:p21crack .4s ease-out .4s both}
++@keyframes p21crack{0%{transform:none;opacity:1}30%{transform:scale(1.15);opacity:1}31%{opacity:0}100%{opacity:0;transform:scale(.6)}}
++.p21shard{position:absolute;width:12px;height:12px;z-index:4;pointer-events:none;background:var(--sc,#7a1420);clip-path:polygon(50% 0,100% 60%,30% 100%,0 40%);opacity:0}
++body:not(.rm) #devov.env10ov .envletter{transform-origin:50% 0;animation:p21let .62s cubic-bezier(.22,.8,.24,1) 1.1s both}
++@keyframes p21let{0%{opacity:0;transform:translateY(40%) scaleY(.33)}48%{opacity:1;transform:translateY(0) scaleY(.33)}74%{transform:scaleY(.66)}100%{opacity:1;transform:none}}
++body:not(.rm) #devov.env10ov .envletter.burn{animation:p21burn 1s linear forwards!important}
++@keyframes p21burn{0%{opacity:1;transform:none;clip-path:polygon(0 0,100% 0,100% 104%,88% 100%,74% 106%,60% 101%,46% 107%,32% 100%,18% 105%,0 101%)}100%{opacity:1;transform:none;clip-path:polygon(0 0,100% 0,100% -2%,88% -6%,74% 0%,60% -5%,46% 1%,32% -6%,18% -1%,0 -5%)}}
++.p21ember{position:absolute;height:8px;z-index:5;pointer-events:none;background:linear-gradient(0deg,rgba(255,90,20,0),#ff8a2a 40%,#fff1a8 60%,rgba(255,90,20,0));box-shadow:0 -4px 10px rgba(255,140,40,.8);border-radius:4px}
++.p21ember::before,.p21ember::after{content:"";position:absolute;width:3px;height:3px;background:#ffd36a;border-radius:50%;left:30%;top:-6px;animation:p21spark .4s linear infinite}
++.p21ember::after{left:68%;animation-delay:.2s}
++@keyframes p21spark{from{transform:translateY(0);opacity:1}to{transform:translateY(-14px);opacity:0}}
++
++/* ПАКЕТ 21 · МОУШН · U1: лёгкое решение — штамп и печать без замаха */
++body.p21lite:not(.rm) .reso .stamp.hit{animation:p21stampLite .2s cubic-bezier(.3,1.45,.5,1) forwards}
++@keyframes p21stampLite{0%{opacity:0;transform:scale(1.12) rotate(var(--r))}100%{opacity:.9;transform:scale(1) rotate(var(--r))}}
++body.p21lite:not(.rm) .reso .sealbox.hit .seal8{animation-duration:.28s}
++
++/* ПАКЕТ 21 · МОУШН · U2: плашка «↓ Варианты» */
++.p21more{position:fixed;z-index:60;transform:translateX(-50%);padding:6px 12px;font:700 13px var(--f-body,sans-serif);color:#1a1420;background:#d9b45a;border:2px solid #000;box-shadow:0 3px 0 #000;cursor:pointer}
++.p21more[hidden]{display:none}
++
++/* ПАКЕТ 21 · МОУШН · M04: призрак печати, оттиск в точку клика, брызги сургуча */
++.p21zg{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:3px solid rgba(200,52,60,.55);opacity:.35;pointer-events:none;z-index:2}
++.p21zg.seal{background:radial-gradient(circle at 40% 35%,#e0485a,#a0101c 60%,#5a0810);border:0}
++body:not(.rm) .p21at>svg{translate:var(--p21x,0) var(--p21y,0)}
++.p21drop{position:absolute;width:6px;height:6px;border-radius:50%;background:#a0101c;pointer-events:none;z-index:3}
++
++/* ПАКЕТ 21 · МОУШН · M05: след образца, линия и галочка «подпись есть» */
++.p21sample{position:absolute;inset:0;opacity:.12;pointer-events:none}
++.p21sample svg{width:100%;height:100%}
++.p21sample path{fill:none;stroke:#1a2a6a;stroke-width:3;stroke-dasharray:none}
++.p21sline{position:absolute;left:6%;right:6%;bottom:14%;height:2px;background:#2f3a8a;transform-origin:0 50%;pointer-events:none}
++.p21check{position:absolute;right:4%;bottom:16%;font:700 20px/1 var(--f-body,sans-serif);color:#1f7a45;pointer-events:none}
++
++/* ПАКЕТ 21 · МОУШН · M07: реплика по словам */
++body:not(.rm) .p21w{opacity:0;animation:p21word .12s ease-out forwards}
++body:not(.rm) .p21all .p21w{animation:none;opacity:1}
++@keyframes p21word{from{opacity:0}to{opacity:1}}
++
++/* ПАКЕТ 21 · МОУШН · M09: стрелки впечатываются по одной, плитка «?» */
++body:not(.rm) .p21ar{display:inline-block;animation:p21arrow .14s cubic-bezier(.3,1.45,.5,1) both}
++@keyframes p21arrow{from{opacity:0;transform:scale(1.8)}}
++#fx>.p21q{filter:grayscale(1);opacity:.85}
++#fx>.p21q span{font:700 22px/1 var(--f-body,sans-serif);color:#cfc8de}
++
++/* ПАКЕТ 21 · МОУШН · M11: сегмент остывает в серый */
++.p21cool{position:absolute;inset:0;background:#ff8a4a;border-radius:inherit;pointer-events:none}
++
++/* ПАКЕТ 21 · МОУШН · M12: дата по знакоместам */
++.p21ch{display:inline-block}
++body:not(.rm) .p21fl{animation:m20flap .2s ease-out both}
++
++/* ПАКЕТ 21 · МОУШН · M24: штамп «ДСП», VHS «NO SAVE» */
++.p21dsp{position:absolute;right:-8px;top:50%;width:54px;height:54px;margin-top:-27px;pointer-events:none}
++.p21dsp .stamp{position:static!important;width:54px!important;height:54px!important}
++.p21vhs{position:fixed;inset:0;z-index:9200;pointer-events:none;display:grid;place-items:center;background:rgba(10,8,20,.35)}
++.p21vhs b{font:24px/1 var(--f-px,monospace);color:#fff;text-shadow:3px 0 #ef4b5e,-3px 0 #4bd1ef;animation:p21rgb .13s steps(2,end) infinite}
++.p21vhs i{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 2px,transparent 2px 5px);animation:p21roll 1.3s linear}
++@keyframes p21rgb{50%{transform:translateX(3px)}}
++@keyframes p21roll{from{transform:translateY(-20px)}to{transform:none}}
++
++/* ПАКЕТ 21 · МОУШН · M02: рамка по периметру; M26: цепи и замок на закрытых вариантах */
++.p21frame{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
++.p21frame rect{fill:none;stroke:#d8ac55;stroke-width:2;stroke-dasharray:1;stroke-dashoffset:0;vector-effect:non-scaling-stroke}
++#opts>.opt.on{position:relative}
++#opts>.opt.p21chain{position:relative;overflow:hidden}
++#opts>.opt.p21chain::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;background:repeating-linear-gradient(-28deg,transparent 0 14px,rgba(150,140,170,.55) 14px 17px,transparent 17px 22px,rgba(150,140,170,.55) 22px 25px,transparent 25px 40px)}
++#opts>.opt.p21chain::after{content:"🔒";position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;filter:drop-shadow(0 1px 0 #000)}
++
++/* ПАКЕТ 21 · МОУШН · M03: перо на кончике подписи */
++.p21nib{fill:#1a2a6a;opacity:0;filter:drop-shadow(0 0 2px rgba(26,42,106,.6))}
++
++/* ПАКЕТ 21 · МОУШН · M08: подсказка перетекает */
++#tip.p21flow{animation:none!important}
++
++/* ПАКЕТ 21 · МОУШН · M17: латунная планка вкладок */
++.p21tab{position:absolute;left:0;top:0;width:100px;height:3px;background:linear-gradient(90deg,#94692a,#f3d58a,#94692a);transform-origin:0 50%;pointer-events:none}
++
++/* ПАКЕТ 21 · МОУШН · M19: телефон — вибрация трубки в такт гудкам, реплики въезжают */
++body:not(.rm) .phcall:has(#phdisp.ring) .phwho canvas{animation:p21buzz .75s steps(1,end) 2}
++@keyframes p21buzz{0%{transform:translateX(-1px)}10%{transform:translateX(1px)}20%{transform:translateX(-1px)}30%{transform:translateX(1px)}40%,100%{transform:none}}
++body:not(.rm) #phdlg>.pl{animation:p21pl .24s cubic-bezier(.22,.8,.24,1) both}
++body:not(.rm) #phdlg>.pl.me{animation-name:p21plMe}
++@keyframes p21pl{from{opacity:0;transform:translateX(-18px)}}
++@keyframes p21plMe{from{opacity:0;transform:translateX(18px)}}
++
++/* ПАКЕТ 21 · МОУШН · M21: латунная полоса у оставшегося абзаца */
++.pl9p.p21keep{position:relative}
++.pl9p.p21keep::before{content:"";position:absolute;left:-6px;top:4px;bottom:4px;width:3px;background:linear-gradient(#f3d58a,#94692a);transform-origin:50% 0;pointer-events:none}
++body:not(.rm) .pl9p.p21keep::before{animation:p21keep .3s cubic-bezier(.22,.8,.24,1) both}
++@keyframes p21keep{from{transform:scaleY(0)}}
++
++/* ПАКЕТ 21 · МОУШН · M22: вспышка щели урны */
++.p21slot{position:absolute;left:46%;top:50%;width:12%;height:4px;margin-top:-2px;background:#fff6c8;box-shadow:0 0 12px 4px rgba(255,236,160,.8);pointer-events:none;z-index:2}
++
++/* ПАКЕТ 21 · МОУШН · M25: рамка тоста прорисовывается; «В ДЕЛО» */
++body:not(.rm) #toast.p21tf{background-image:linear-gradient(#d9b45a,#d9b45a),linear-gradient(#d9b45a,#d9b45a);background-repeat:no-repeat;background-size:0 2px,0 2px;background-position:0 0,100% 100%;animation:m20toast .26s cubic-bezier(.3,1.45,.5,1),p21tframe .36s cubic-bezier(.22,.8,.24,1) .1s forwards}
++@keyframes p21tframe{to{background-size:100% 2px,100% 2px}}
++.p21file{position:fixed;left:0;top:0;z-index:9100;pointer-events:none;width:60px;padding:3px 0;text-align:center;font:8px/1 var(--f-px,monospace);color:#a0101c;background:#f5eddb;border:2px solid #a0101c}
++
++/* ПАКЕТ 21 · МОУШН · U6: лента «Последнее решение» */
++#p21last{position:absolute;left:8px;bottom:8px;z-index:6;max-width:calc(100% - 16px);padding:3px 8px;font:12px/1.3 var(--f-body,sans-serif);color:#efe7d3;background:rgba(14,13,22,.82);border:1px solid #34304a;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
++#p21last span{color:#a9a3c2}#p21last em{font-style:normal}#p21last em.up{color:#8ef0b0}#p21last em.dn{color:#ff9aa8}
++#p21last[hidden]{display:none}
++
++/* ПАКЕТ 21 · МОУШН · U9: печать «сохранено» */
++.p21saved{position:fixed;z-index:70;pointer-events:none;padding:1px 6px;font:700 11px/16px var(--f-body,sans-serif);color:#1f7a45;border:2px solid #1f7a45;border-radius:3px;background:rgba(245,237,219,.92)}
++
++/* ПАКЕТ 21 · МОУШН · U12: доложено / на деле */
++.p21cmp{display:block;position:relative;height:5px;margin-top:3px;background:rgba(0,0,0,.12);min-width:50px}
++.p21cmp b,.p21cmp i{position:absolute;left:0;top:0;bottom:0}
++.p21cmp b{background:#2a8a50}
++.p21cmp i{top:1px;bottom:1px;background:rgba(216,172,85,.85);transform-origin:0 50%}
++.p21cmp.gap{box-shadow:0 0 0 1px #c8343c}
++
++/* ПАКЕТ 21 · МОУШН · U10: заставка до шрифтов */
++#p21load{position:fixed;inset:0;z-index:9999;display:grid;place-content:center;gap:10px;background:#0e0d16;pointer-events:none}
++#p21load b{font:700 28px/1 Georgia,serif;letter-spacing:.3em;color:#d8ac55}
++#p21load i{display:block;height:3px;background:#d8ac55;transform-origin:0 50%;animation:p21bar 1.4s cubic-bezier(.22,.8,.24,1) both}
++@keyframes p21bar{from{transform:scaleX(0)}}
++body.rm #p21load i{animation:none}
++
++/* ПАКЕТ 21 · МОУШН · M10: красный след полосы отношения */
++.p21trail{position:absolute;top:0;bottom:0;background:rgba(239,75,94,.75);pointer-events:none}
++.p21ar{font-style:normal}
++</style>
++<script id="p21-motion-js">
++/* ================= ПАКЕТ 21 · МОУШН · логика (ТЗ-М-2: очереди A, B, C) ================= */
++(() => {
++'use strict';
++const P21 = window.P21 = window.P21 || {};
++const RMQ = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
++const ON = () => { try { return !PREF.rm && !(RMQ && RMQ.matches); } catch (e) { return true; } };
++const MOB = () => document.documentElement.classList.contains('mob');
++const q = (s, r) => (r || document).querySelector(s), qa = (s, r) => [...(r || document).querySelectorAll(s)];
++const sfx = (n) => { try { AU.sfx(n); } catch (e) {} };                 /* существующие звуки игры */
++const hook = (n) => { try { window.SFX && SFX.play(n); } catch (e) {} };  /* новые звуки — хуки для звукового пакета */
++const restart = (el, cls, ms) => { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); if (ms) { clearTimeout(el['_p21' + cls]); el['_p21' + cls] = setTimeout(() => el.classList.remove(cls), ms); } };
++P21.on = ON;
++
++/* ---------- B1 · снимок листа: только видимая часть; на телефоне — без копии ---------- */
++P21.sheetSnap = (sh) => {
++  if (MOB()) return null;
++  const g = sh.cloneNode(false), sr = sh.getBoundingClientRect();
++  for (const ch of sh.children) { const r = ch.getBoundingClientRect();
++    if (r.bottom > sr.top - 8 && r.top < sr.bottom + 8) g.appendChild(ch.cloneNode(true));
++    else { const sp = document.createElement('div'); sp.style.height = r.height + 'px'; g.appendChild(sp); } }
++  return g;
++};
++
++/* ---------- B2 · «упирается» без событий на disabled (iOS Safari, Telegram) ---------- */
++document.addEventListener('pointerdown', (e) => {
++  if (!ON() || !e.isPrimary) return; const t = e.target;
++  if (t && t.closest && t.closest('button[disabled], .bigbtn.dis, .opt.vfy13.dis, .opt.off, .ap11i.off')) return; /* это ловит пакет 20 */
++  const M = q('#modal'), root = M && !M.hidden ? M : document, x = e.clientX, y = e.clientY;
++  for (const b of root.querySelectorAll('button[disabled]')) { const r = b.getBoundingClientRect();
++    if (r.width && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) { restart(b, 'm20no', 300); if (b.matches('.bigbtn, .workbtn, #bdrop, #sigok, #dsok, #pl9ok, #econt')) sfx('lock'); break; } }
++}, true);
++
++/* ---------- B3 · счёт голосования проматывается кликом по листу, пробелом, Enter ---------- */
++const counting = () => !!q('#sheet .vote #vres[hidden]');
++q('#sheet').addEventListener('click', () => { if (counting()) U.skip = true; });
++window.addEventListener('keydown', (e) => { if ((e.key === ' ' || e.key === 'Enter') && counting() && q('#modal').hidden && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) { U.skip = true; if (e.key === ' ') e.preventDefault(); } }, true);
++
++/* ---------- U5 · подсказка не висит: прячется через 4 с неподвижности и в начале голосования ---------- */
++let tipT = 0;
++const PT21 = placeTip;
++placeTip = function () { const r = PT21.apply(this, arguments); clearTimeout(tipT); tipT = setTimeout(() => { try { hideTip(); } catch (e) {} }, 4000); return r; };
++const SV21 = showVotes;
++showVotes = function () { try { hideTip(); } catch (e) {} return SV21.apply(this, arguments); };
++
++/* ---------- B5 · призрак закрытого окна не ложится поверх нового; B10 · пауза бесконечных циклов ---------- */
++const hold = () => { const M = q('#modal'), open = !!(M && !M.hidden); document.body.classList.toggle('p21hold', document.hidden || open); if (open) qa('.m20mout, .m20bk').forEach(x => x.remove()); };
++new MutationObserver(hold).observe(q('#modal'), { attributes: true, attributeFilter: ['hidden'] });
++document.addEventListener('visibilitychange', hold);
++
++/* ---------- B4 · M10 · деньги: барабан цифр, дельта справа от суммы ---------- */
++const fmtPw = (v) => v.toFixed(1).replace('.', ',');
++const ROLL = { id: 0, until: 0, from: 0, to: 0 };
++function drum(b, from, to, dur) {
++  const tn = b.firstChild; if (!tn || tn.nodeType !== 3) return false;
++  const A = fmtPw(from), B = fmtPw(to), n = Math.max(A.length, B.length), a = A.padStart(n, ' '), c = B.padStart(n, ' '), up = to > from;
++  const box = document.createElement('span'); box.className = 'p21drum'; box.setAttribute('aria-label', B);
++  const nd = (c.match(/\d/g) || []).length; let j = 0;
++  for (let i = 0; i < n; i++) { const ch = c[i];
++    if (!/\d/.test(ch)) { if (ch !== ' ') box.appendChild(document.createTextNode(ch)); continue; }
++    j++; const last = j === nd, d0 = /\d/.test(a[i]) ? +a[i] : 0, d1 = +ch;
++    let i0, i1; if (up) { i0 = d0; i1 = d1 > d0 || (d1 === d0 && !last) ? d1 : d1 + 10; } else { i0 = d0 > d1 || (d1 === d0 && !last) ? d0 : d0 + 10; i1 = d1; }
++    const w = document.createElement('span'); w.className = 'p21dc'; const st = document.createElement('span'); st.className = 'p21ds'; st.textContent = '01234567890123456789'; w.appendChild(st); box.appendChild(w);
++    st.style.transform = `translateY(${-i1 * 1.1}em)`;
++    /* младшие разряды крутятся дольше: от 60% до 100% длительности */
++    if (i0 !== i1) st.animate([{ transform: `translateY(${-i0 * 1.1}em)` }, { transform: `translateY(${-i1 * 1.1}em)` }], { duration: Math.round(dur * (.6 + .4 * j / nd)), easing: 'cubic-bezier(.7,0,.2,1)' });
++  }
++  box.appendChild(document.createTextNode(' '));
++  b.replaceChild(box, tn); return true;
++}
++const undrum = (id, to, ms) => setTimeout(() => { if (id !== ROLL.id) return; const dr = q('#desk .m17h b .p21drum'); if (dr) dr.replaceWith(document.createTextNode(fmtPw(to) + ' ')); }, ms);
++P21.moneyRoll = (from, to) => {
++  const up = to > from, id = ++ROLL.id; ROLL.from = from; ROLL.to = to; ROLL.until = performance.now() + 440;
++  const host = q('#desk .m17h'), b = q('#desk .m17h b');
++  const coin = q('#desk .m17coin'); if (coin) { coin.classList.remove('m20up', 'm20dn'); restart(coin, up ? 'm20up' : 'm20dn', 520); }
++  if (b && !up) restart(b, 'm20dn', 720);
++  hook(up ? 'coinUp' : 'coinDown');
++  if (host && b) { const d = document.createElement('span'); d.className = 'm20delta p21 ' + (up ? 'up' : 'dn'); d.textContent = (up ? '+' : '−') + fmtPw(Math.abs(to - from));
++    if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
++    const hr = host.getBoundingClientRect(), br = b.getBoundingClientRect();
++    d.style.left = Math.round(br.right - hr.left + 8) + 'px'; d.style.top = Math.round(br.top - hr.top + br.height / 2 - 9) + 'px';
++    host.appendChild(d); setTimeout(() => d.remove(), 1100); }
++  if (b && drum(b, from, to, 420)) undrum(id, to, 470);
++};
++/* updDesk() перерисовал стол посреди прокрутки — барабан пересоздаётся с оставшимся временем */
++const UD21 = updDesk;
++updDesk = function () { const r = UD21.apply(this, arguments);
++  try { const left = ROLL.until - performance.now(); if (ON() && left > 40) { const b = q('#desk .m17h b'); if (b && !b.querySelector('.p21drum') && drum(b, ROLL.from, ROLL.to, left)) undrum(ROLL.id, ROLL.to, left + 40); } } catch (e) {}
++  return r; };
++
++/* ---------- тактильный отклик: U7 · вибрация выключается отдельно от звука ---------- */
++const vibOn = () => { try { return PREF.vib !== false; } catch (e) { return true; } };
++try { const TG = window.TGAPP, HF = TG && TG.HapticFeedback; if (HF && !HF._p21) { const w = {}; ['impactOccurred', 'notificationOccurred', 'selectionChanged'].forEach(k => { w[k] = function () { if (vibOn() && HF[k]) return HF[k].apply(HF, arguments); }; }); w._p21 = 1; TG.HapticFeedback = w; } } catch (e) {}
++const hapt = (kind, style) => { try { const HF = window.TGAPP && window.TGAPP.HapticFeedback; if (!HF || !vibOn()) return; if (kind === 'imp') HF.impactOccurred(style); else if (kind === 'note') HF.notificationOccurred(style); else HF.selectionChanged(); } catch (e) {} };
++P21.hapt = hapt;
++
++/* ---------- M14 · U8 · камера раздумья: тяжёлая кривая, тряска синусами ≤2px, виньетка в такт сердцу ---------- */
++const BZ = (x1, y1, x2, y2) => { const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
++  return x => { if (x <= 0) return 0; if (x >= 1) return 1; let t = x; for (let i = 0; i < 8; i++) { const e = ((ax * t + bx) * t + cx) * t - x, d = (3 * ax * t + 2 * bx) * t + cx; if (Math.abs(e) < 1e-5 || Math.abs(d) < 1e-6) break; t -= e / d; } t = Math.min(1, Math.max(0, t)); return ((ay * t + by) * t + cy) * t; }; };
++const heavy = BZ(.7, 0, .2, 1); P21.heavy = heavy;
++/* тряска: сумма двух синусов вместо шума; амплитуда ограничена 2 px сцены, на телефоне ×0,6 */
++P21.jit = (t, axis, shk) => { const s = t / 1000 * 2 * Math.PI, v = Math.sin(s * .7 + axis * 1.7) * .6 + Math.sin(s * 1.3 + 1 + axis * 2.3) * .4; const a = Math.min(2, shk / 2) * (MOB() ? .6 : 1); return Math.round(v * a); };
++/* U8: таймер раздумья идёт, только когда варианты видны и лист не прокручивают; лёгкие карточки — не раньше 60 с; в меню — отключение */
++const TH = { vis: false, since: 0, scroll: 0, io: null, box: null }; P21._th = TH;
++function watchOpts() { const box = q('#opts'); if (box === TH.box) return; TH.box = box; TH.vis = false; if (TH.io) TH.io.disconnect(); if (!box || !window.IntersectionObserver) { TH.vis = true; return; }
++  TH.io = new IntersectionObserver(es => { es.forEach(e => { const v = e.isIntersecting; if (v && !TH.vis) TH.since = performance.now(); TH.vis = v; }); }); TH.io.observe(box); }
++q('#sheet').addEventListener('scroll', () => { TH.scroll = performance.now(); }, { passive: true });
++window.addEventListener('scroll', () => { TH.scroll = performance.now(); }, { passive: true });
++const TS21 = thinkState;
++thinkState = function (t) {
++  const none = { z: 1, rev: false, k: -1, u: 0 };
++  try { if (PREF.think === false) { return none; } watchOpts(); if (!TH.vis) { return none; }
++    const t0 = Math.max(SC.cardT0, TH.since, TH.scroll + 1500), extra = (SC.sev || 1) <= 1 ? 25000 : 0;
++    const r = TS21.call(this, t - (t0 - SC.cardT0) - extra);
++    if (r && r.z > 1 && typeof r.tau === 'number') { const pres = typeof PRES12 === 'function' && PRES12(); r.z = pres ? 1 + 2.2 * heavy(Math.min(1, r.tau / 160)) : (r.k >= 0 ? 1 + 6.5 * heavy(r.u) : r.z); } /* M14: наезд по тяжёлой кривой (у президента — кривая пакета 13) */
++    return r; } catch (e) { return TS21.apply(this, arguments); }
++};
++/* виньетка: темнеет по мере наезда, сжимается на новой фазе, пульсирует на каждый удар сердца */
++const VG = { el: null, op: -1, phase: -1, beat: 0 };
++function vigEl() { if (VG.el && VG.el.isConnected) return VG.el; const sw = q('#screenwrap'); if (!sw) return null; const v = document.createElement('div'); v.className = 'p21vig'; v.innerHTML = '<i></i>'; sw.appendChild(v); VG.el = v; return v; }
++const RS21 = renderScene;
++renderScene = function (t) {
++  RS21.apply(this, arguments);
++  try {
++    const z = typeof LASTZ === 'number' ? LASTZ : 1, on = ON() && z > 1.001;
++    if (!on) { if (VG.op !== 0 && VG.el) { VG.el.style.opacity = 0; VG.op = 0; } VG.phase = -1; return; }
++    const v = vigEl(); if (!v) return;
++    const op = Math.round((.25 + .35 * Math.min(1, (z - 1) / 5.5)) * 50) / 50; if (op !== VG.op) { v.style.opacity = op; VG.op = op; }
++    if (SC.phase !== VG.phase) { VG.phase = SC.phase; v.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 600, easing: 'cubic-bezier(.7,0,.2,1)' }); }
++    if (SC.lastBeat !== VG.beat) { VG.beat = SC.lastBeat; v.firstChild.animate([{ opacity: 0 }, { opacity: 1, offset: .35 }, { opacity: 0 }], { duration: 380, easing: 'ease-out' }); if (SC.phase >= 2 || z > 1.3) hapt('imp', 'light'); }
++  } catch (e) {}
++};
++/* взгляд собеседника: разворот камеры со смазом (3 кадра по 50 мс → смена плана → обратный смаз) */
++const GZ = { busy: false, cv: null };
++function gazeCanvas() { if (GZ.cv && GZ.cv.isConnected) return GZ.cv; const sw = q('#screenwrap'), v = q('#view'); if (!sw || !v) return null; const c = document.createElement('canvas'); c.className = 'p21smear'; c.width = W; c.height = H; c.hidden = true; v.insertAdjacentElement('afterend', c); GZ.cv = c; return c; }
++function smearFrame(c, k, dir) { const x = c.getContext('2d'); x.imageSmoothingEnabled = false; x.clearRect(0, 0, W, H); x.globalAlpha = 1; x.drawImage(view, 0, 0); const n = 3, step = 6 * k; for (let i = 1; i <= n; i++) { x.globalAlpha = .38; x.drawImage(view, Math.round(dir * step * i), 0); } x.globalAlpha = 1; }
++function gazeRun(c, swap) {
++  GZ.busy = true; const dir = SC.revLock ? -1 : 1;
++  const seq = [[0, 1], [50, 2], [100, 3], [160, 'swap'], [200, 3], [250, 2], [300, 1], [360, 'end']];
++  c.hidden = false;
++  seq.forEach(([ms, k]) => setTimeout(() => {
++    if (k === 'swap') { try { swap(); } catch (er) { console.error(er); } return; }
++    if (k === 'end') { c.hidden = true; GZ.busy = false; return; }
++    smearFrame(c, k, ms < 160 ? dir : -dir);
++  }, ms));
++}
++/* базовый обработчик (роли без пакета 13) */
++view.addEventListener('click', (e) => {
++  if (!ON() || GZ.busy || SC.mode !== 'card' || !SC.who) return; const [x, y] = canvasXY(e);
++  const hit = SC.revLock || inBox(LASTINFO.eyes && [LASTINFO.eyes[0] - 10, LASTINFO.eyes[1] - 10, LASTINFO.eyes[2] + 20, LASTINFO.eyes[3] + 20], x, y); if (!hit) return;
++  const c = gazeCanvas(); if (!c) return;
++  e.stopImmediatePropagation();
++  gazeRun(c, () => { SC.revLock = !SC.revLock; SC.cardT0 = performance.now(); sfx('page'); const eh = $('eyehint'); if (eh) eh.hidden = true; PREF.eyeHint = 9; try { savePrefs(); } catch (er) {} });
++}, true);
++/* президент: клик по сцене перехватывает пакет 13 (REVCLICK17) — оборачиваем его */
++if (typeof window.REVCLICK17 === 'function') { const RC17 = window.REVCLICK17;
++  window.REVCLICK17 = function (e, x, y) {
++    const would = SC.who && SC.mode === 'card' && (SC.revLock || (typeof charHit13 === 'function' ? charHit13(x, y) : true)) && (typeof sceneLive13 !== 'function' || sceneLive13());
++    const c = would && ON() && !GZ.busy ? gazeCanvas() : null; if (!c) return GZ.busy ? undefined : RC17.apply(this, arguments);
++    const self = this, args = arguments; gazeRun(c, () => RC17.apply(self, args)); }; }
++
++/* ---------- M16 · доклад: строки каскадом, сканер, зачёркивание неверного, правда, штамп ---------- */
++const EP = 'cubic-bezier(.22,.8,.24,1)';
++function cascadeRows(tbl, d0) { qa('tr', tbl).forEach((tr, i) => tr.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 220, delay: (d0 || 0) + i * 50, easing: EP, fill: 'backwards' })); }
++function scanTable(tbl, lied) {
++  const host = tbl.parentNode; if (!host) return; if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
++  cascadeRows(tbl, 0);
++  qa('td.t', tbl).forEach(td => td.animate([{ opacity: 0, transform: 'translateX(-4px)' }, { opacity: 1, transform: 'none' }], { duration: 300, delay: 1600, easing: EP, fill: 'backwards' }));
++  const ln = document.createElement('div'); ln.className = 'p21scan'; ln.style.top = tbl.offsetTop + 'px'; ln.style.left = tbl.offsetLeft + 'px'; ln.style.width = tbl.offsetWidth + 'px'; host.appendChild(ln);
++  ln.animate([{ opacity: 0, transform: 'translateY(0)' }, { opacity: 1, offset: .08 }, { opacity: 1, offset: .92 }, { opacity: 0, transform: `translateY(${tbl.offsetHeight}px)` }], { duration: 700, delay: 700, easing: 'linear', fill: 'both' }).onfinish = () => ln.remove();
++  setTimeout(() => hook('scan'), 700);
++  /* неверные числа: штрих от руки поверх «по докладу» */
++  qa('tr', tbl).forEach((tr, i) => { const bad = tr.querySelector('td.t b.dn'), v = tr.querySelector('td.v'); if (!bad || !v) return;
++    if (getComputedStyle(v).position === 'static') v.style.position = 'relative';
++    v.insertAdjacentHTML('beforeend', '<svg class="p21strike" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M2 13 C30 8 60 15 98 6" pathLength="1"/></svg>');
++    const p = v.querySelector('.p21strike path'); p.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 200, delay: 1400 + i * 40, easing: 'ease-in-out', fill: 'both' }); });
++  if (qa('td.t b.dn', tbl).length) setTimeout(() => sfx('pen'), 1400);
++}
++function stampIn(el, d) { if (!el) return; el.animate([{ opacity: 0, transform: 'scale(1.6) rotate(-6deg)' }, { opacity: 1, transform: 'scale(.94) rotate(-6deg)', offset: .44 }, { opacity: 1, transform: 'scale(1.02) rotate(-6deg)', offset: .8 }, { opacity: 1, transform: 'rotate(-6deg)' }], { duration: 480, delay: d, easing: 'cubic-bezier(.6,0,.9,.4)', fill: 'backwards' }); }
++P21.runScan = (a, b) => runScan(a, b);
++function runScan(fid, lied) {
++  if (!ON()) return;
++  const doc = q(`#sheet .rp10[data-f="${fid}"]`), ov = q('#devov:not([hidden])');
++  const t1 = doc && doc.querySelector('table.rep'), t2 = ov && ov.querySelector('table.rep');
++  [t1, t2].forEach(t => { if (t && t.querySelector('td.t')) scanTable(t, lied); });
++  const st = (doc && doc.querySelector('.vres10')) || (ov && ov.querySelector('.vstamp')); if (st) { stampIn(st, 1950); setTimeout(() => { sfx('stamp'); if (lied > 6) hapt('note', 'warning'); }, 2130); }
++}
++['verifyEntry8', 'verifyFavor9'].forEach(fn => { if (typeof window[fn] !== 'function' && !(fn === 'verifyEntry8' && typeof verifyEntry8 === 'function')) return;
++  try { const f0 = fn === 'verifyEntry8' ? verifyEntry8 : verifyFavor9; const w = function (S_, f) { const r = f0.apply(this, arguments); try { if (r && !r.err && f) requestAnimationFrame(() => runScan(f.id, r.lied || f.lied || 0)); } catch (e) {} return r; };
++    if (fn === 'verifyEntry8') verifyEntry8 = w; else verifyFavor9 = w; } catch (e) {} });
++/* открытие доклада: строки ложатся каскадом */
++const REP21 = showReport8;
++showReport8 = function (scr) { const r = REP21.apply(this, arguments); try { if (ON()) { requestAnimationFrame(() => { const t = q('#sheet .rp10 table.rep'); if (t) cascadeRows(t, 60); }); setTimeout(() => { const t = q('#devov:not([hidden]) table.rep'); if (t) cascadeRows(t, 0); }, 300); } } catch (e) {} return r; };
++
++/* ---------- M18 · указ: латунный ползунок редакции, чипы пересчитываются, подписанный указ летит в папку ---------- */
++function paperTarget() {
++  const v = q('#view'); if (v && typeof SC !== 'undefined' && SC.bg === 'pov' && !SC.revLock) { const a = v.getBoundingClientRect(); if (a.width) { const sx = a.width / W, sy = a.height / H; const x = a.left + (152 + 41) * sx, y = a.top + (172 + 22) * sy; if (y > 0 && y < innerHeight) return { x, y, scene: true }; } }
++  const fo = q('#desk .dk-act.fo'); if (fo) { const r = fo.getBoundingClientRect(); if (r.width && r.top > 0 && r.top < innerHeight) return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
++  return { x: innerWidth / 2, y: 24 };
++}
++function slideRedak(box, animate) {
++  const on = box.querySelector('button.on'); if (!on) return; let bar = box.querySelector('.p21rail'); const first = !bar;
++  if (!bar) { bar = document.createElement('i'); bar.className = 'p21rail'; if (getComputedStyle(box).position === 'static') box.style.position = 'relative'; box.appendChild(bar); }
++  const x = on.offsetLeft, y = on.offsetTop + on.offsetHeight + 2, w = on.offsetWidth, to = `translate(${x}px,${y}px) scaleX(${w / 100})`;
++  if (animate && !first && bar._t && ON()) bar.animate([{ transform: bar._t }, { transform: to }], { duration: 240, easing: 'cubic-bezier(.3,1.45,.5,1)' });
++  bar.style.transform = to; bar._t = to;
++}
++document.addEventListener('click', (e) => {
++  const b = e.target.closest && e.target.closest('.redak button[data-v]'); if (!b) return;
++  requestAnimationFrame(() => { const box = b.closest('.redak'); if (box) slideRedak(box, true);
++    if (!ON()) return; const ch = qa('.chips .chip, .chips > span', box && box.parentNode);
++    ch.forEach((c, i) => c.animate([{ opacity: .2, transform: 'scale(.7)' }, { opacity: 1, transform: 'scale(1.08)', offset: .7 }, { opacity: 1, transform: 'none' }], { duration: 180, delay: i * 60, easing: 'ease-out', fill: 'backwards' })); });
++});
++document.addEventListener('click', (e) => {
++  const ok = e.target.closest && e.target.closest('#dsok'); if (!ok || ok.disabled) return;
++  const doc = q('#decdoc'); if (!doc) return; hapt('note', 'success');
++  if (!ON()) return; /* сокращённо: окно закрывается как обычно, вспышка бумаги — от folderPing13 */
++  const r = doc.getBoundingClientRect(); if (!r.width) return;
++  const f = document.createElement('div'); f.className = 'p21dec'; f.style.width = r.width + 'px'; f.style.height = r.height + 'px'; f.style.transform = `translate(${r.left}px,${r.top}px)`; document.body.appendChild(f);
++  sfx('page');
++  const tg = paperTarget(), x0 = r.left, y0 = r.top, cx = tg.x - r.width / 2, cy = tg.y - r.height / 2, mx = (x0 + cx) / 2, my = Math.min(y0, cy) - 90;
++  const fold = f.animate([{ transform: `translate(${x0}px,${y0}px)` }, { transform: `translate(${x0}px,${y0}px) scaleY(.5)` }], { duration: 200, easing: 'cubic-bezier(.55,0,.75,.2)', fill: 'forwards' });
++  fold.onfinish = () => {
++    const kf = []; for (let i = 0; i <= 12; i++) { const t = i / 12, u = 1 - t, x = u * u * x0 + 2 * u * t * mx + t * t * cx, y = u * u * y0 + 2 * u * t * my + t * t * cy; kf.push({ transform: `translate(${x}px,${y}px) scale(${1 - .82 * t},${.5 - .41 * t}) rotate(${-10 * t}deg)`, opacity: t > .9 ? 1 - (t - .9) * 8 : 1 }); }
++    const fl = f.animate(kf, { duration: 480, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'forwards' });
++    fl.onfinish = () => { f.remove(); try { folderPing13(); } catch (er) {} };
++  };
++  setTimeout(() => f.remove(), 1500);
++}, true);
++/* ползунок ставится при открытии указа */
++new MutationObserver(() => { const box = q('#modal:not([hidden]) .redak'); if (box && !box.querySelector('.p21rail')) requestAnimationFrame(() => slideRedak(box, false)); }).observe(q('#mbody') || q('#modal'), { childList: true });
++
++/* ---------- M23 · старт: параллакс панелей, блик по надписи, раскрытие выбранной панели ---------- */
++const START = q('#start'); let pxRaf = 0, pxEv = null;
++START.addEventListener('mousemove', (e) => { if (!ON() || !matchMedia('(hover:hover)').matches) return; pxEv = e; if (pxRaf) return;
++  pxRaf = requestAnimationFrame(() => { pxRaf = 0; const ev = pxEv, s = ev.target.closest && ev.target.closest('.slant'); if (!s || s.classList.contains('locked')) return; const r = s.getBoundingClientRect();
++    const dx = Math.round(((ev.clientX - r.left) / r.width - .5) * -12), dy = Math.round(((ev.clientY - r.top) / r.height - .5) * -12);
++    s.classList.add('p21px'); s.style.setProperty('--px', dx + 'px'); s.style.setProperty('--py', dy + 'px'); }); });
++START.addEventListener('mouseleave', () => qa('.slant.p21px', START).forEach(s => { s.style.setProperty('--px', '0px'); s.style.setProperty('--py', '0px'); }), true);
++function gleam() { if (!ON()) return; const h = q('#start .sel-h'); if (!h) return; const n = h.querySelectorAll('.m20l').length || 7; h.classList.remove('p21gl'); void h.offsetWidth; h.style.setProperty('--gld', (n * 60 + 160) + 'ms'); h.classList.add('p21gl'); }
++const SST21 = showStart; showStart = function () { const r = SST21.apply(this, arguments); try { gleam(); } catch (e) {} return r; };
++const STT21 = showTerms; showTerms = function () { const r = STT21.apply(this, arguments); try { gleam(); } catch (e) {} return r; };
++try { if (!START.hidden) gleam(); } catch (e) {}
++START.addEventListener('click', (e) => {
++  const s = e.target.closest && e.target.closest('.slant'); if (!s || !ON() || s.classList.contains('locked') || s._p21go || !s.onclick) return;
++  const wrap = s.closest('.slants'); if (!wrap) return; const cv = s.querySelector('canvas');
++  e.stopImmediatePropagation(); e.preventDefault(); s._p21go = 1; try { AU.init(); } catch (er) {}
++  const wr = wrap.getBoundingClientRect(), sr = s.getBoundingClientRect();
++  const ov = document.createElement('div'); ov.className = 'p21open'; Object.assign(ov.style, { left: wr.left + 'px', top: wr.top + 'px', width: wr.width + 'px', height: wr.height + 'px' });
++  if (cv) { const c2 = document.createElement('canvas'); c2.width = cv.width; c2.height = cv.height; try { c2.getContext('2d').drawImage(cv, 0, 0); } catch (er) {} ov.appendChild(c2); }
++  document.body.appendChild(ov); hook('rustle'); hapt('imp', 'medium');
++  const ins = (l, t, r, b) => `inset(${t}px ${r}px ${b}px ${l}px)`;
++  ov.animate([{ clipPath: ins(sr.left - wr.left, sr.top - wr.top, wr.right - sr.right, wr.bottom - sr.bottom) }, { clipPath: ins(0, 0, 0, 0) }], { duration: 480, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'forwards' });
++  qa('.slant', wrap).forEach(o => { if (o !== s) o.animate([{ opacity: 1 }, { opacity: .15 }], { duration: 240, fill: 'forwards' }); });
++  setTimeout(() => { try { s.onclick.call(s, e); } catch (er) { console.error(er); } s._p21go = 0;
++    const a = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }); a.onfinish = () => ov.remove(); setTimeout(() => ov.remove(), 600); }, 480);
++}, true);
++
++/* ---------- M20 · секретный пакет: сургуч на осколки, клапан в объёме, письмо разворачивается; сожжение кромкой ---------- */
++const DEV = q('#devov');
++if (DEV) new MutationObserver((ms) => { if (!ON()) return;
++  for (const m of ms) {
++    if (m.type === 'childList') { const env = DEV.querySelector('.env10.open:not(.p21e)'); if (env) { env.classList.add('p21e'); const b = env.querySelector('.envb'), s = env.querySelector('.envseal');
++      if (b && s) { for (let i = 0; i < 3; i++) { const sh = document.createElement('i'); sh.className = 'p21shard'; sh.style.cssText = `left:${s.offsetLeft + s.offsetWidth / 2 - 6}px;top:${s.offsetTop + s.offsetHeight / 2 - 6}px;--sc:${getComputedStyle(s).getPropertyValue('--sc') || '#7a1420'}`; b.appendChild(sh);
++        const a = [-150, -30, 80][i] * Math.PI / 180, d = 34 + i * 6; sh.animate([{ opacity: 1, transform: 'none' }, { opacity: 1, transform: `translate(${Math.round(Math.cos(a) * d)}px,${Math.round(Math.sin(a) * d)}px) rotate(${(i - 1) * 140}deg)`, offset: .7 }, { opacity: 0, transform: `translate(${Math.round(Math.cos(a) * d * 1.2)}px,${Math.round(Math.sin(a) * d * 1.2 + 14)}px) rotate(${(i - 1) * 200}deg)` }], { duration: 400, delay: 400, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' }); }
++        setTimeout(() => { hook('waxCrack'); hapt('imp', 'medium'); }, 400); } } }
++    else if (m.target.classList && m.target.classList.contains('envletter') && m.target.classList.contains('burn') && !m.target._p21) { const L = m.target; L._p21 = 1;
++      const em = document.createElement('i'); em.className = 'p21ember'; em.style.cssText = `left:${L.offsetLeft}px;width:${L.offsetWidth}px;top:${L.offsetTop + L.offsetHeight - 6}px`; L.parentNode.appendChild(em);
++      em.animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(${-L.offsetHeight}px)`, opacity: 1, offset: .9 }, { transform: `translateY(${-L.offsetHeight - 6}px)`, opacity: 0 }], { duration: 1000, easing: 'linear', fill: 'forwards' }).onfinish = () => em.remove();
++      hook('fire'); }
++  } }).observe(DEV, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
++
++/* ---------- U1 · темп ритуала по весу решения: лёгкие — подпись 0,3 с и штамп без замаха; меню «Темп» ---------- */
++let LITE = false;
++const isLite = (scr) => { try { if (!scr || !scr.card || scr.locked || scr.bill || scr.coerced) return false; const c = scr.card, sev = SC.sev || c.sev || 1; if (c.kill || c.shadow || c.coerce || c._second || sev >= 3) return false; return PREF.tempo === 'fast' ? sev <= 2 : sev <= 1; } catch (e) { return false; } };
++const CI21 = confirmInner;
++confirmInner = async function () { LITE = ON() && isLite(U.scr); document.body.classList.toggle('p21lite', LITE); try { return await CI21.apply(this, arguments); } finally { LITE = false; document.body.classList.remove('p21lite'); } };
++const AS21 = animSig;
++animSig = function (svg, total) { if (LITE) total = 300; return AS21.call(this, svg, total); };
++const WT21 = wait;
++wait = function (ms) { return WT21.call(this, LITE && ms <= 520 ? Math.round(ms * .5) : ms); };
++P21.isLite = isLite;
++
++/* ---------- U2 · к вариантам без поиска: докрутка листа и плашка «↓ Варианты (N)» ---------- */
++const U2 = { el: null, io: null, wasWait: true, scr: null };
++function moreEl() { if (U2.el) return U2.el; const b = document.createElement('button'); b.className = 'p21more'; b.hidden = true; b.addEventListener('click', (e) => { e.stopPropagation(); const o = q('#opts'); if (o) o.scrollIntoView({ block: 'nearest', behavior: ON() ? 'smooth' : 'auto' }); b.hidden = true; }); document.body.appendChild(b); U2.el = b; return b; }
++function optsBelow() { const o = q('#opts .opt'), sh = q('#sheet'); if (!o || !sh) return false; const r = o.getBoundingClientRect(), s = sh.getBoundingClientRect(); return r.top > Math.min(s.bottom, innerHeight) - 20; }
++function placeMore() { const b = moreEl(), sh = q('#sheet'), n = qa('#opts > .opt').length; if (!sh || !n || !U.scr || !U.scr.card) { b.hidden = true; return; }
++  if (!optsBelow()) { b.hidden = true; return; } const s = sh.getBoundingClientRect(); b.textContent = `↓ Варианты (${n})`; b.style.left = Math.round(s.left + s.width / 2) + 'px'; b.style.top = Math.round(Math.min(s.bottom, innerHeight) - 46) + 'px';
++  if (b.hidden) { b.hidden = false; if (ON()) b.animate([{ opacity: 0, transform: 'translate(-50%,10px)' }, { opacity: 1, transform: 'translate(-50%,0)' }], { duration: 220, easing: EP }); } }
++const RO21 = renderOptions;
++renderOptions = function () {
++  const r = RO21.apply(this, arguments);
++  try { const scr = U.scr; if (scr !== U2.scr) { U2.scr = scr; U2.wasWait = true; if (U2.el) U2.el.hidden = true; }
++    const waiting = !U.linesDone || !U.docRead;
++    if (scr && scr.card && !waiting && U2.wasWait && !U.busy) { U2.wasWait = false;
++      requestAnimationFrame(() => { if (U.scr !== scr) return; const sh = q('#sheet'), o = q('#opts'); if (sh && o && optsBelow() && performance.now() - TH.scroll > 1200) { if (sh.scrollHeight > sh.clientHeight + 4) { const top = sh.scrollTop + o.getBoundingClientRect().top - sh.getBoundingClientRect().top - 40; sh.scrollTo({ top, behavior: ON() ? 'smooth' : 'auto' }); } else o.scrollIntoView({ block: 'nearest', behavior: ON() ? 'smooth' : 'auto' }); }
++        setTimeout(placeMore, ON() ? 650 : 50); }); }
++    else if (waiting) U2.wasWait = true;
++  } catch (e) {}
++  return r;
++};
++const hideMoreIfSeen = () => { if (U2.el && !U2.el.hidden && !optsBelow()) U2.el.hidden = true; };
++q('#sheet').addEventListener('scroll', hideMoreIfSeen, { passive: true }); window.addEventListener('scroll', hideMoreIfSeen, { passive: true });
++document.addEventListener('click', (e) => { if (U2.el && !U2.el.hidden && e.target.closest && e.target.closest('#opts')) U2.el.hidden = true; }, true);
++
++/* ---------- M04 · печать вручную: призрак под курсором, оттиск в точку клика (±12 px), брызги сургуча ---------- */
++const ZSEL = '.z13.ready, .decseal.ready, .pl9seal.ready';
++let gzRaf = 0, gzEv = null;
++document.addEventListener('pointermove', (e) => { if (e.pointerType !== 'mouse' || !ON()) return; gzEv = e; if (gzRaf) return;
++  gzRaf = requestAnimationFrame(() => { gzRaf = 0; const ev = gzEv, z = ev.target.closest && ev.target.closest(ZSEL); qa('.p21zg').forEach(g => { if (!z || g.parentNode !== z) g.remove(); }); if (!z) return;
++    let g = z.querySelector(':scope > .p21zg'); if (!g) { g = document.createElement('i'); g.className = 'p21zg' + (z.matches('.k-seal, .decseal, .pl9seal, .rpseal') ? ' seal' : ''); if (getComputedStyle(z).position === 'static') z.style.position = 'relative'; z.appendChild(g); }
++    const r = z.getBoundingClientRect(), dx = Math.max(-12, Math.min(12, ev.clientX - r.left - r.width / 2)), dy = Math.max(-12, Math.min(12, ev.clientY - r.top - r.height / 2)); g.style.transform = `translate(${Math.round(dx)}px,${Math.round(dy)}px)`; }); }, { passive: true });
++document.addEventListener('click', (e) => {
++  const z = e.target.closest && e.target.closest(ZSEL); if (!z) return; const r = z.getBoundingClientRect();
++  const dx = Math.round(Math.max(-12, Math.min(12, e.clientX - r.left - r.width / 2))), dy = Math.round(Math.max(-12, Math.min(12, e.clientY - r.top - r.height / 2)));
++  const seal = z.matches('.k-seal, .decseal, .pl9seal, .rpseal');
++  setTimeout(() => { if (!ON() || !z.isConnected) return; if (e.detail) { z.style.setProperty('--p21x', dx + 'px'); z.style.setProperty('--p21y', dy + 'px'); z.classList.add('p21at'); }
++    if (seal) { if (getComputedStyle(z).position === 'static') z.style.position = 'relative';
++      for (let i = 0; i < 4; i++) { const d = document.createElement('i'); d.className = 'p21drop'; d.style.left = `calc(50% + ${dx}px - 3px)`; d.style.top = `calc(50% + ${dy}px - 3px)`; z.appendChild(d); const a = (i * 90 + 35) * Math.PI / 180, L = 18 + (i % 2) * 8;
++        d.animate([{ opacity: 1, transform: 'scale(1.2)' }, { opacity: 0, transform: `translate(${Math.round(Math.cos(a) * L)}px,${Math.round(Math.sin(a) * L)}px) scale(.5)` }], { duration: 300, delay: 160, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' }).onfinish = () => d.remove(); } } }, 0);
++}, true);
++
++/* ---------- M05 · подпись от руки: толщина от скорости, след образца, линия и галочка «подпись есть» ---------- */
++const PADSEL = '#sigc, #dscv, .handsig canvas, .sigpad canvas, .ds-pad canvas, .sp10 canvas, [class*="spad"] canvas';
++const PV = new WeakMap();
++document.addEventListener('pointerdown', (e) => { const c = e.target.closest && e.target.closest('canvas'); if (!c || !c.matches(PADSEL)) return; const x = c.getContext('2d'); const st = PV.get(c) || { w0: x.lineWidth || 5 }; st.t = e.timeStamp; st.x = e.clientX; st.y = e.clientY; st.v = 0; PV.set(c, st);
++  const pad = c.parentNode; const sm = pad && pad.querySelector('.p21sample'); if (sm) sm.remove(); }, true);
++document.addEventListener('pointermove', (e) => { const c = e.target; if (!c || c.tagName !== 'CANVAS' || !(e.buttons & 1)) return; const st = PV.get(c); if (!st) return;
++  const dt = Math.max(1, e.timeStamp - st.t), v = Math.hypot(e.clientX - st.x, e.clientY - st.y) / dt; st.v = st.v * .7 + v * .3; st.t = e.timeStamp; st.x = e.clientX; st.y = e.clientY;
++  const k = Math.max(.55, Math.min(1.35, 1.4 - st.v * .45)); c.getContext('2d').lineWidth = st.w0 * k; }, true);
++function sample(pad) { if (!ON() || !U.sig || !pad || pad.querySelector('.p21sample') || pad.classList.contains('ok')) return; const d = document.createElement('div'); d.className = 'p21sample'; d.innerHTML = sigSVG(); d.querySelectorAll('path').forEach(p => p.setAttribute('stroke-dashoffset', 0)); if (getComputedStyle(pad).position === 'static') pad.style.position = 'relative'; pad.insertBefore(d, pad.firstChild); }
++function sigOk(pad) { if (!pad || pad._p21ok) return; pad._p21ok = 1; const sm = pad.querySelector('.p21sample'); if (sm) sm.remove(); if (getComputedStyle(pad).position === 'static') pad.style.position = 'relative';
++  pad.insertAdjacentHTML('beforeend', '<i class="p21sline"></i><b class="p21check">✓</b>'); if (!ON()) return;
++  pad.querySelector('.p21sline').animate([{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 300, easing: EP, fill: 'backwards' });
++  pad.querySelector('.p21check').animate([{ opacity: 0, transform: 'scale(1.8)' }, { opacity: 1, transform: 'none' }], { duration: 240, delay: 220, easing: 'cubic-bezier(.3,1.45,.5,1)', fill: 'backwards' }); }
++P21.sigOk = sigOk;
++
++/* ---------- M07 · реплики проявляются по словам: 28 мс на знак, не дольше 1,6 с; «Показать всё» достраивает ---------- */
++function wordsIn(bub) {
++  const nodes = [...bub.childNodes].filter(n => !(n.nodeType === 1 && n.tagName === 'B')); let total = 0, units = [];
++  nodes.forEach(n => { if (n.nodeType === 3) { const parts = n.nodeValue.split(/(\s+)/); const fr = document.createDocumentFragment(); parts.forEach(p => { if (!p) return; if (/^\s+$/.test(p)) { fr.appendChild(document.createTextNode(p)); return; } const s = document.createElement('span'); s.className = 'p21w'; s.textContent = p; fr.appendChild(s); units.push([s, p.length + 1]); }); n.replaceWith(fr); }
++    else if (n.nodeType === 1) { n.classList.add('p21w'); units.push([n, (n.textContent || '').length + 1]); } });
++  units.forEach(u => total += u[1]); const T = Math.min(1600, total * 28), k = total ? T / total : 0; let acc = 0;
++  units.forEach(([s, l]) => { s.style.animationDelay = Math.round(acc * k) + 'ms'; acc += l; });
++}
++new MutationObserver((ms) => { if (!ON()) return; for (const m of ms) for (const n of m.addedNodes) {
++  if (n.nodeType !== 1) continue; if (n.classList.contains('dl') && n.parentNode && n.parentNode.id === 'dlg') { const box = n.parentNode; if (!box.querySelector('.dlgskip') || box.classList.contains('p21all')) continue; const bub = n.querySelector(':scope > div'); if (bub) wordsIn(bub); } } })
++  .observe(q('#sheet'), { childList: true, subtree: true });
++document.addEventListener('click', (e) => { const s = e.target.closest && e.target.closest('.dlgskip'); if (s && s.parentNode) s.parentNode.classList.add('p21all'); }, true);
++
++/* ---------- M09 · плитки последствий: стрелки впечатываются по одной; серая плитка «?» для скрытых последствий ---------- */
++let LASTRES = null;
++const CH21 = choose; choose = function () { const r = CH21.apply(this, arguments); try { LASTRES = r; } catch (e) {} return r; };
++const FX21 = showFx;
++showFx = function (applied) {
++  const r = FX21.apply(this, arguments);
++  try { const fx = q('#fx'); if (!fx) return r;
++    if (LASTRES && LASTRES.silent > 0 && LASTRES.applied === applied) fx.insertAdjacentHTML('beforeend', '<div class="fxc p21q"><span>?</span><small>Скрыто</small></div>');
++    if (ON()) [...fx.children].forEach((t, i) => { const sp = t.querySelector('span, b'); if (!sp || t.classList.contains('p21q')) return; let k = 0; sp.innerHTML = [...sp.textContent].map((ch) => /[▲▼]/.test(ch) ? `<i class="p21ar" style="animation-delay:${Math.round(260 + Math.min(i, 5) * 70 + (k++) * 60)}ms">${ch}</i>` : esc(ch)).join(''); });
++  } catch (e) {}
++  return r;
++};
++
++/* ---------- общий наблюдатель листа, окна и присяги: подпись засчитана (M05), итог голосования (M15, U11) ---------- */
++const OBS = new MutationObserver((ms) => {
++  for (const m of ms) {
++    const el = m.target;
++    if (m.type === 'attributes') {
++      if (m.attributeName === 'class' && el.classList) {
++        if (el.classList.contains('ok') && el.querySelector && el.querySelector(':scope > canvas')) sigOk(el);
++        else if (el.id === 'decseal' && el.classList.contains('ready')) sigOk(q('#dspad'));
++        else if (el.classList.contains('ctz13') && el.classList.contains('on')) sigOk(q('#sigpad'));
++      } else if (m.attributeName === 'hidden' && el.id === 'vres' && !el.hidden) { el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite'); if (ON()) { hook('gavel'); } }
++    } else {
++      for (const n of m.addedNodes) { if (n.nodeType !== 1) continue;
++        const pads = n.matches && n.matches('.sigpad, .ds-pad, .sp10, [class*="spad"]') ? [n] : (n.querySelectorAll ? qa('.sigpad, .ds-pad, .sp10, [class*="spad"]', n) : []);
++        pads.forEach(p => { if (p.querySelector(':scope > canvas')) sample(p); }); }
++    }
++  }
++});
++['#sheet', '#mbody', '#inaug'].forEach(s => { const r = q(s); if (r) OBS.observe(r, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] }); });
++/* M15: тики счёта — по смене цифр «за» (не чаще 70 мс) */
++let tickT = 0;
++new MutationObserver(() => { const now = performance.now(); if (ON() && now - tickT > 70 && counting()) { tickT = now; hook('voteTick'); } }).observe(q('#sheet'), { childList: true, characterData: true, subtree: true });
++/* M15: табло в зале листается кадрами — цифры меняются раз в 2 кадра (66 мс), в кадр смены — шов «перекидного» табло */
++if (typeof hallDyn === 'function') { const HD21 = hallDyn; const HB = { t: 0, p: 0 };
++  hallDyn = function (c, t, vote) { if (!vote || !ON() || vote.p == null || vote.p >= 1) return HD21.apply(this, arguments);
++    let flip = false; if (t - HB.t >= 66 || vote.p < HB.p) { flip = HB.p !== vote.p; HB.t = t; HB.p = vote.p; }
++    const r = HD21.call(this, c, t, Object.assign({}, vote, { p: HB.p }));
++    if (flip) { try { R(c, 22, 37, 72, 1, '#000'); R(c, 290, 37, 72, 1, '#000'); } catch (e) {} }
++    return r; }; }
++
++/* ---------- M11 · «остывание» сегмента угрозы при снижении ---------- */
++P21.threatCool = (t, from, to) => { if (!ON()) return; const ss = t.querySelectorAll('s'); for (let k = to; k < from && k < ss.length; k++) { const s = ss[k]; if (getComputedStyle(s).position === 'static') s.style.position = 'relative'; const g = document.createElement('i'); g.className = 'p21cool'; s.appendChild(g); g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, easing: 'ease-out', fill: 'forwards' }).onfinish = () => g.remove(); } };
++
++/* ---------- M12 · дата листается по знакоместам ---------- */
++P21.dateFlap = (txt, old) => { if (!ON()) return; const now = txt.textContent; if (!now) return; const o = old.padEnd(now.length, ' ');
++  txt.innerHTML = [...now].map((ch, i) => ch === o[i] ? `<span class="p21ch">${ch === ' ' ? '&nbsp;' : ch}</span>` : `<span class="p21ch p21fl" style="animation-delay:${i * 18}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('');
++  clearTimeout(txt._p21); txt._p21 = setTimeout(() => { if (txt.querySelector('.p21ch')) txt.textContent = now; }, 600); };
++
++/* ---------- M13 · вход персонажа шагом (12 к/с, покачивание, присед); жалюзи для улицы ---------- */
++P21.enter = (dt) => { if (!ON()) return null; const D = 500; if (dt >= D + 166) return { dx: 0, dy: 0 }; const f = Math.floor(Math.max(0, dt) / 83), n = Math.floor(D / 83);
++  if (f < n) { const p = f / n; return { dx: Math.round((1 - p) * (1 - p) * 140), dy: f % 2 ? -1 : 0 }; } return { dx: 0, dy: f === n ? 1 : 0 }; };
++const BL = { m: null };
++P21.mask = (k, bg) => { if (!/^street/.test(bg || '')) return null; if (!BL.m) { BL.m = []; for (let s = 1; s < 8; s++) { const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.fillStyle = '#fff'; for (let y = 0; y < H; y += 8) x.fillRect(0, y + s, W, 8 - s); BL.m.push(c); } } return BL.m[k - 1]; };
++
++/* ---------- M24 · итоги: штампы «ДСП» у скрытых показателей и кармы; VHS «NO SAVE» при проигрыше ---------- */
++const EG21 = endGame;
++endGame = function (id) {
++  const r = EG21.apply(this, arguments);
++  try { const box = q('#end'); if (box && !box.hidden) {
++    const T0 = MOB() ? 500 : 900, rm = !ON();
++    qa('.eb.hid, .karma', box).forEach((h, i) => { if (h.querySelector('.p21dsp')) return; if (getComputedStyle(h).position === 'static') h.style.position = 'relative'; const d = document.createElement('div'); d.className = 'p21dsp'; d.innerHTML = stampSVG('ДСП', '', '#7a1420'); h.appendChild(d); const st = d.querySelector('.stamp'); if (rm) st.classList.add('hit'); else setTimeout(() => { st.classList.add('hit'); sfx('stamp'); }, T0 + 1500 + i * 220); });
++    const E = (typeof ENDINGS !== 'undefined' && ENDINGS[id]) || {};
++    const lose = !E.cont && /default|street|cult|silence|anarchy|emergency|barracks|crash|bubble|plot|hostage|mafia|arrest|impeach|lost|coup|dead|kill|prison|revol|fall/i.test(String(id));
++    if (lose && !rm) { const v = document.createElement('div'); v.className = 'p21vhs'; v.innerHTML = '<b>NO SAVE</b><i></i>'; box.appendChild(v); hook('vhs'); v.animate([{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: 1, offset: .85 }, { opacity: 0 }], { duration: 1300, fill: 'forwards' }).onfinish = () => v.remove(); }
++  } } catch (e) {}
++  return r;
++};
++
++/* ---------- M02 · рамка выбранного варианта обводится по периметру; подсказка — по словам. M26 · цепи на закрытых ---------- */
++const RO21b = renderOptions;
++renderOptions = function () {
++  const r = RO21b.apply(this, arguments);
++  try { const box = q('#opts'); if (!box || !U.scr) return r;
++    const on = box.querySelector('.opt.on.m20pick');
++    if (on && ON() && !on.querySelector('.p21frame')) { on.insertAdjacentHTML('beforeend', '<svg class="p21frame" preserveAspectRatio="none" viewBox="0 0 100 100"><rect x="1" y="1" width="98" height="98" pathLength="1"/></svg>'); on.querySelector('.p21frame rect').animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 360, easing: EP, fill: 'both' }); }
++    const h = q('#hint'); if (h && h.classList.contains('m20h') && ON() && h.textContent && !h.querySelector('.p21w')) { const ws = h.textContent.split(' '); h.innerHTML = ws.map((w, i) => `<span class="p21w" style="animation-delay:${i * 60}ms">${w}</span>`).join(' '); }
++    if (U.scr.locked) qa('.opt.off', box).forEach((o, i) => { o.classList.add('p21chain'); if (ON() && U.scr !== RO21b._scr) o.animate([{ transform: 'translateX(-3px)' }, { transform: 'translateX(2px)', offset: .5 }, { transform: 'none' }], { duration: 200, delay: 200 + i * 60 }); });
++    RO21b._scr = U.scr;
++  } catch (e) {}
++  return r;
++};
++
++/* ---------- M03 · перо-точка на кончике подписи ---------- */
++const AS21b = animSig;
++animSig = function (svg, total) {
++  const pr = AS21b.apply(this, arguments);
++  try { if (svg && ON() && !U.skip) { const T = LITE ? 300 : (total || 750); const paths = qa('path', svg); const lens = paths.map(p => { try { return p.getTotalLength(); } catch (e) { return 100; } }); const sum = lens.reduce((a, b) => a + b, 0) || 1;
++    const NS = 'http://www.w3.org/2000/svg', dot = document.createElementNS(NS, 'circle'); dot.setAttribute('r', '3.2'); dot.setAttribute('class', 'p21nib'); svg.appendChild(dot); const t0 = performance.now(); let acc = 0; const segs = paths.map((p, i) => { const d = T * lens[i] / sum, s = { p, a: acc, d, L: lens[i] }; acc += d + 40; return s; });
++    const step = (now) => { const el = now - t0; const s = segs.find(x => el >= x.a && el <= x.a + x.d) || null; if (s) { const k = (el - s.a) / s.d, e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; try { const pt = s.p.getPointAtLength(s.L * e); dot.setAttribute('cx', pt.x.toFixed(1)); dot.setAttribute('cy', pt.y.toFixed(1)); dot.style.opacity = 1; } catch (er) {} } else dot.style.opacity = 0;
++      if (el < acc && !U.skip && dot.isConnected) requestAnimationFrame(step); else dot.remove(); }; requestAnimationFrame(step); } } catch (e) {}
++  return pr;
++};
++
++/* ---------- M08 · подсказка выходит из точки над словом и перетекает между терминами ---------- */
++const TP = { x: null, y: null, vis: false };
++const ST21 = showTip;
++showTip = function (html, x, y) { const was = !tip.hidden, ox = parseFloat(tip.style.left), oy = parseFloat(tip.style.top); const r = ST21.apply(this, arguments);
++  try { if (!ON()) return r; const nx = parseFloat(tip.style.left), ny = parseFloat(tip.style.top);
++    if (was && !isNaN(ox) && (Math.abs(nx - ox) + Math.abs(ny - oy) > 24)) { tip.classList.add('p21flow'); tip.animate([{ transform: `translate(${ox - nx}px,${oy - ny}px)` }, { transform: 'none' }], { duration: 120, easing: EP }); setTimeout(() => tip.classList.remove('p21flow'), 140); }
++    else if (!was) tip.style.transformOrigin = `${Math.round(x - nx)}px ${Math.round(y - ny)}px`; } catch (e) {}
++  return r; };
++
++/* ---------- M17 · латунная планка вкладок едет к выбранной ---------- */
++let TABX = null;
++new MutationObserver(() => { const t = q('#mbody .tabs9, #mbody .tabs8'); if (!t) { TABX = null; return; } const on = t.querySelector('button.on'); if (!on || t.querySelector('.p21tab')) return;
++  if (getComputedStyle(t).position === 'static') t.style.position = 'relative'; const bar = document.createElement('i'); bar.className = 'p21tab'; t.appendChild(bar);
++  const to = `translate(${on.offsetLeft}px,${on.offsetTop + on.offsetHeight - 3}px) scaleX(${on.offsetWidth / 100})`; bar.style.transform = to;
++  if (TABX && TABX !== to && ON()) bar.animate([{ transform: TABX }, { transform: to }], { duration: 240, easing: 'cubic-bezier(.3,1.45,.5,1)' }); TABX = to; })
++  .observe(q('#mbody'), { childList: true, subtree: true });
++
++/* ---------- M19 · телефон: реплики въезжают, окно уходит вниз ---------- */
++const CM21 = closeModal;
++closeModal = function () { const phone = !!q('#modal:not([hidden]) .phwrap'); const r = CM21.apply(this, arguments);
++  try { if (phone && ON()) { const g = [...document.querySelectorAll('.m20mout')].pop(); if (g) { g.getAnimations().forEach(a => a.cancel()); g.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(40px)' }], { duration: 200, easing: 'cubic-bezier(.55,0,.75,.2)', fill: 'forwards' }).onfinish = () => g.remove(); } } } catch (e) {}
++  return r; };
++
++/* ---------- M21 · послание: латунная полоса у единственного оставшегося абзаца раздела ---------- */
++document.addEventListener('click', (e) => { if (!e.target.closest || !e.target.closest('.pl9p')) return; requestAnimationFrame(() => qa('#mbody .pl9sec').forEach(sec => { const left = qa('.pl9p:not(.struck)', sec); qa('.pl9p', sec).forEach(p => p.classList.toggle('p21keep', left.length === 1 && left[0] === p)); })); });
++
++/* ---------- M22 · урна вздрагивает, щель вспыхивает при попадании бюллетеня ---------- */
++document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('#bdrop'); if (!b || b.disabled || !ON()) return; const sc = q('.bl-scene'); if (!sc) return;
++  setTimeout(() => { sc.animate([{ transform: 'translateY(1px)' }, { transform: 'translateY(-1px)' }, { transform: 'none' }], { duration: 160, easing: 'steps(3,end)' });
++    if (getComputedStyle(sc).position === 'static') sc.style.position = 'relative'; const f = document.createElement('i'); f.className = 'p21slot'; sc.appendChild(f); f.animate([{ opacity: 0, transform: 'scaleX(.4)' }, { opacity: 1, transform: 'scaleX(1.2)', offset: .3 }, { opacity: 0, transform: 'scaleX(1)' }], { duration: 360 }).onfinish = () => f.remove(); hook('ballotIn'); }, 780); }, true);
++
++/* ---------- M25 · тост: рамка прорисовывается; бейдж очереди подпрыгивает; «В ДЕЛО» ---------- */
++const TO21 = toast;
++toast = function (t) { const r = TO21.apply(this, arguments);
++  try { const el = q('#toast'); if (el && ON()) { el.classList.remove('p21tf'); void el.offsetWidth; el.classList.add('p21tf');
++      if (/личн\S* дел|в дело/i.test(String(t))) { const tg = q('#bar [data-act="log"]') || q('#bar'); const er = el.getBoundingClientRect(), tr = tg ? tg.getBoundingClientRect() : { left: 20, top: innerHeight - 30, width: 0, height: 0 };
++        const f = document.createElement('div'); f.className = 'p21file'; f.textContent = 'В ДЕЛО'; document.body.appendChild(f); const x0 = er.left + er.width / 2 - 30, y0 = er.top, x1 = tr.left + tr.width / 2 - 30, y1 = tr.top;
++        f.animate([{ transform: `translate(${x0}px,${y0}px)`, opacity: 1 }, { transform: `translate(${(x0 + x1) / 2}px,${Math.min(y0, y1) - 60}px) scale(.8)`, opacity: 1, offset: .5 }, { transform: `translate(${x1}px,${y1}px) scale(.4)`, opacity: 0 }], { duration: 700, delay: 300, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' }).onfinish = () => f.remove(); } } } catch (e) {}
++  return r; };
++const qn = q('#qn'); if (qn) { let last = qn.textContent; new MutationObserver(() => { if (qn.textContent !== last && +qn.textContent > +last && ON()) qn.animate([{ transform: 'none' }, { transform: 'translateY(-6px) scale(1.2)', offset: .4 }, { transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.3,1.45,.5,1)' }); last = qn.textContent; }).observe(qn, { childList: true, characterData: true, subtree: true }); }
++
++/* ---------- M10 · полоса отношения: при падении красный след догоняет через 200 мс; U2 — плашка прячется при смене экрана ---------- */
++const RELSEEN = {};
++const SS21 = showScreen;
++showScreen = function (scr) {
++  const r = SS21.apply(this, arguments);
++  try { if (U2.el && !(scr && scr.card)) U2.el.hidden = true;
++    const who = scr && scr.card && scr.card.who; if (who && S && S.rel) { const now = S.rel[who] || 0, was = RELSEEN[who]; RELSEEN[who] = now;
++      if (ON() && was != null && now < was - .5) qa('#sheet .crel b, #sheet .rbar i, #sheet .ct13rel s').slice(0, 1).forEach(bar => {
++        const host = bar.parentNode, ow = Math.min(50, Math.abs(was) / 2), nw = Math.min(50, Math.abs(now) / 2), side = was >= 0 ? 'left' : 'right';
++        const tr = document.createElement('span'); tr.className = 'p21trail'; tr.style.cssText = `${side}:50%;width:${ow}%;transform-origin:${was >= 0 ? '0' : '100%'} 50%`; host.insertBefore(tr, bar);
++        const k = (was >= 0) === (now >= 0) && ow ? nw / ow : 0;
++        tr.animate([{ transform: 'none' }, { transform: `scaleX(${k.toFixed(3)})` }], { duration: 600, delay: 200 + 380, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'forwards' }).onfinish = () => tr.remove(); }); } } catch (e) {}
++  return r;
++};
++
++/* ---------- меню: U1 «Темп», U7 «Вибрация», U8 «Раздумье» ---------- */
++const OM21 = openMenu;
++openMenu = function () { const r = OM21.apply(this, arguments);
++  try { const m = q('#mbody .menu'); if (m && !m.querySelector('[data-p21]')) { const home = m.querySelector('[data-act="home"]');
++    const html = `<button data-p21="tempo">Темп ритуала: ${PREF.tempo === 'fast' ? 'быстрый' : 'обычный (по весу решения)'}</button><button data-p21="think">Раздумье с наездом камеры: ${PREF.think === false ? 'выкл' : 'вкл'}</button>${window.TGAPP && window.TGAPP.HapticFeedback ? `<button data-p21="vib">Вибрация: ${PREF.vib === false ? 'выкл' : 'вкл'}</button>` : ''}`;
++    if (home) home.insertAdjacentHTML('beforebegin', html); else m.insertAdjacentHTML('beforeend', html); } } catch (e) {}
++  return r; };
++q('#modal').addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-p21]'); if (!b) return; e.stopPropagation(); const k = b.dataset.p21;
++  if (k === 'tempo') PREF.tempo = PREF.tempo === 'fast' ? 'normal' : 'fast'; else if (k === 'think') PREF.think = PREF.think === false ? true : false; else if (k === 'vib') PREF.vib = PREF.vib === false ? true : false;
++  try { savePrefs(); } catch (er) {} sfx('sel'); openMenu(); }, true);
++
++/* ---------- U6 · «Последнее решение»: тонкая лента, по наведению — подробности, клик — Журнал ---------- */
++const FX21b = showFx;
++showFx = function (applied) { const r = FX21b.apply(this, arguments);
++  try { const list = (applied || []).filter(a => Math.abs(a.d) >= .5 && SK[a.k]); if (!list.length) return r; const sw = q('#screenwrap'); if (!sw) return r;
++    let rb = q('#p21last'); if (!rb) { rb = document.createElement('button'); rb.id = 'p21last'; rb.addEventListener('click', (e) => { e.stopPropagation(); try { openLog(); } catch (er) {} }); sw.appendChild(rb); }
++    const g = (k, d) => good(k, d); rb.innerHTML = `<span>Последнее решение:</span> ${list.slice(0, 4).map(({ k, d }) => `<em class="${g(k, d) ? 'up' : 'dn'}">${esc(SNAME(k))} ${d > 0 ? '▲' : '▼'}</em>`).join(', ')}${list.length > 4 ? ' …' : ''}`;
++    rb.title = list.map(({ k, d }) => `${SNAME(k)}: ${arrows(d)}`).join(' · ') + ' — нажмите, чтобы открыть Журнал (J)';
++    rb.hidden = false; if (ON()) rb.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 220, delay: 3000, easing: EP, fill: 'backwards' });
++  } catch (e) {}
++  return r; };
++
++/* ---------- U9 · сохранение видно: печать «сохранено» у даты после решения ---------- */
++let svT = 0;
++const SG21 = saveGame;
++saveGame = function () { const r = SG21.apply(this, arguments);
++  try { const now = performance.now(); if (U.busy && now - svT > 3000 && S && !S.ended) { svT = now; const wt = q('#weektxt'); if (wt) { const rc = wt.getBoundingClientRect(); if (rc.width) { const s = document.createElement('div'); s.className = 'p21saved'; s.textContent = '✓ сохранено'; s.style.left = Math.round(rc.right + 8) + 'px'; s.style.top = Math.round(rc.top + rc.height / 2 - 9) + 'px'; document.body.appendChild(s);
++      (ON() ? s.animate([{ opacity: 0, transform: 'scale(1.4) rotate(-8deg)' }, { opacity: 1, transform: 'rotate(-8deg)', offset: .2 }, { opacity: 1, transform: 'rotate(-8deg)', offset: .8 }, { opacity: 0, transform: 'rotate(-8deg)' }], { duration: 1000 }) : s.animate([{ opacity: 1 }, { opacity: 1 }], { duration: 1000 })).onfinish = () => s.remove(); } } } } catch (e) {}
++  return r; };
++
++/* ---------- U11 · доступность: aria-live у плиток последствий; фокус удерживается в окне и возвращается ---------- */
++try { const fx = q('#fx'); if (fx) { fx.setAttribute('aria-live', 'polite'); fx.setAttribute('role', 'status'); } } catch (e) {}
++let FOC = null;
++const OMd21 = openModal;
++openModal = function () { const wasHidden = q('#modal').hidden; if (wasHidden) FOC = document.activeElement; const r = OMd21.apply(this, arguments);
++  try { if (wasHidden) requestAnimationFrame(() => { const f = q('#modal .mbox button:not([disabled]), #modal .mbox [tabindex="0"], #modal .mbox input'); if (f) f.focus({ preventScroll: true }); }); } catch (e) {}
++  return r; };
++new MutationObserver(() => { const M = q('#modal'); if (M.hidden && FOC) { const f = FOC; FOC = null; if (f.isConnected && f.focus) setTimeout(() => { try { f.focus({ preventScroll: true }); } catch (e) {} }, 0); } }).observe(q('#modal'), { attributes: true, attributeFilter: ['hidden'] });
++document.addEventListener('keydown', (e) => { if (e.key !== 'Tab') return; const M = q('#modal'); if (!M || M.hidden) return; const fs = qa('button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', M).filter(x => x.offsetParent !== null); if (!fs.length) return;
++  const a = fs[0], z = fs[fs.length - 1]; if (!M.contains(document.activeElement)) { e.preventDefault(); a.focus(); } else if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } });
++
++/* ---------- U12 · папка: «доложено» поверх «на деле» ---------- */
++if (typeof openFolderEntry === 'function') { const OFE21 = openFolderEntry;
++  openFolderEntry = function (f) { const r = OFE21.apply(this, arguments);
++    try { if (f && f.kind === 'person' && f.verified && f.truth) { const rows = qa('#mbody table.rep tr').filter(tr => tr.querySelector('td.t'));
++      rows.forEach((tr, i) => { const it = f.items[i]; if (!it) return; const told = Math.max(0, Math.min(100, it.v)), real = Math.max(0, Math.min(100, f.truth[it.k])), gap = Math.abs(real - told) > 5;
++        tr.querySelector('td.t').insertAdjacentHTML('beforeend', `<span class="p21cmp${gap ? ' gap' : ''}" title="доложено ${Math.round(told)} · на деле ${Math.round(real)}"><b style="width:${real}%"></b><i style="width:${told}%"></i></span>`); });
++      if (ON()) qa('#mbody .p21cmp i', ).forEach((x, i) => x.animate([{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 400, delay: 100 + i * 60, easing: EP, fill: 'backwards' })); } } catch (e) {}
++    return r; }; }
++
++/* ---------- U4 · читаемость: пиксельный шрифт не мельче 8 px (9 px на телефоне) — поправка поверх текущих стилей ---------- */
++function minPx() {
++  try { const mob = MOB(), min = mob ? 9 : 8, out = [];
++    for (const ss of document.styleSheets) { if (ss.ownerNode && ss.ownerNode.id === 'p21-u4') continue; let rules; try { rules = ss.cssRules; } catch (e) { continue; }
++      const walk = (rs) => { for (const r of rs) { if (r.cssRules && r.type !== 1) { if (r.type === 4 && r.media && !matchMedia(r.media.mediaText).matches) continue; walk(r.cssRules); continue; } if (r.type !== 1) continue;
++        const t = r.style.cssText; if (!/Press Start|--f-px/.test(t)) continue; const m = t.match(/font(?:-size)?:\s*(\d+(?:\.\d+)?)px/); if (m && +m[1] < min) out.push(`${r.selectorText}{font-size:${min}px}`); } };
++      walk(rules); }
++    let st = q('#p21-u4'); if (!st) { st = document.createElement('style'); st.id = 'p21-u4'; document.head.appendChild(st); } st.textContent = out.join('\n'); P21.u4 = out.length; } catch (e) {}
++}
++(window.requestIdleCallback || ((f) => setTimeout(f, 800)))(minPx, { timeout: 3000 });
++
++/* ---------- U10 · холодный старт: короткая заставка до загрузки шрифтов (не дольше 1,5 с) ---------- */
++try { if (document.fonts && document.fonts.status !== 'loaded' && !q('#start').hidden) { const l = document.createElement('div'); l.id = 'p21load'; l.innerHTML = '<b>КАБИНЕТ</b><i></i>'; document.body.appendChild(l);
++  const off = () => { if (!l.isConnected) return; const a = l.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ON() ? 200 : 1, fill: 'forwards' }); a.onfinish = () => l.remove(); };
++  document.fonts.ready.then(off); setTimeout(off, 1500); } } catch (e) {}
++
++})();
++</script>
+ </body>
+ </html>

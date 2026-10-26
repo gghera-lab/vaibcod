@@ -1,0 +1,42 @@
+{
+  "name": "pravo-na-sluh",
+  "version": "0.1.0-beta",
+  "private": true,
+  "description": "«Право на слух» — Telegram Mini App: аудиокнига Конституции РФ, каталог законодательства, запоминание и подписка",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20.10"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build -w @pravo/web && npm run typecheck -w @pravo/server",
+    "start": "npm run start -w @pravo/server",
+    "test": "npm run test -w @pravo/shared && npm run test -w @pravo/server && npm run test:content",
+    "typecheck": "tsc -p tsconfig.json && npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @pravo/server",
+    "db:migrate": "npm run db:migrate -w @pravo/server",
+    "db:seed": "npm run db:seed -w @pravo/server",
+    "constitution:parse": "tsx scripts/constitution/parse.ts",
+    "constitution:verify": "tsx scripts/constitution/verify.ts",
+    "constitution:script": "tsx scripts/constitution/build-script.ts",
+    "audio:synthesize": "tsx scripts/audio/synthesize.ts",
+    "audio:qc": "tsx scripts/audio/qc.ts",
+    "audio:import": "tsx scripts/audio/import-recordings.ts",
+    "test:content": "vitest run --root scripts",
+    "audio:book": "tsx scripts/audio/build-book.ts",
+    "constitution:cards": "tsx scripts/constitution/build-cards.ts",
+    "catalog:build": "tsx scripts/catalog/build-catalog.ts",
+    "finance:model": "tsx scripts/finance/model.ts"
+  },
+  "devDependencies": {
+    "@breezystack/lamejs": "^1.2.7",
+    "@types/node": "^22.15.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-14T17:01:46.741Z",
+  "editionId": "2022-10-04",
+  "structureOk": true,
+  "structureErrors": [],
+  "crossCheck": {
+    "matched": 150,
+    "mismatched": [
+      "art-67",
+      "art-102"
+    ],
+    "unexplained": [],
+    "missing": [],
+    "extra": []
+  }
+}

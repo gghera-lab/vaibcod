@@ -1,0 +1,74 @@
+<style id="p21-qa">
+/* ПАКЕТ 21 · QA · Q13: на стартовом экране меню игры пустое — кнопку прячем */
+body:has(#start:not([hidden])) #tmenu13{display:none!important}
+/* Q4/Q7: видимый фокус у элементов, ставших доступными с клавиатуры */
+.p21kb:focus-visible{outline:3px solid #ffd257;outline-offset:3px}
+</style>
+<script id="p21-qa-js">
+/* ================= ПАКЕТ 21 · QA: исправления по предфинальной проверке ================= */
+(() => {
+'use strict';
+const q = (s, r) => (r || document).querySelector(s);
+const vis = (el) => !!(el && el.offsetParent !== null && el.getClientRects().length);
+
+/* ---------- Q3 · битое или старое сохранение не даёт чёрный экран ---------- */
+if (typeof resume === 'function') {
+  const _resume = resume;
+  resume = function (sv) {
+    try { return _resume.apply(this, arguments); }
+    catch (e) {
+      console.warn('resume failed', e);
+      try { if (typeof SAVE !== 'undefined') store.set(SAVE, null); } catch (e2) {}
+      try { S = null; showStart(); } catch (e3) {}
+      try { if (typeof toast === 'function') toast('Сохранение повреждено и сброшено. Начните новую игру.'); } catch (e4) {}
+    }
+  };
+}
+
+/* ---------- Q4 / Q7 · подписи, печати и бюллетень — с клавиатуры ---------- */
+const KB = '#sigc, #dscv, .sp10, .z13, .pl9p, .brow';
+const tagKB = () => document.querySelectorAll(KB).forEach(el => {
+  if (el.hasAttribute('tabindex')) return;
+  el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.classList.add('p21kb');
+  if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', el.matches('.brow') ? 'Выбрать кандидата' : 'Поставить подпись — Enter');
+});
+// росчерк: последовательность pointer-событий по элементу — работает с любым планшетом подписи
+const stroke = (el) => {
+  const cv = el.matches('canvas') ? el : (el.querySelector('canvas') || el);
+  const r = cv.getBoundingClientRect(); if (!r.width) return;
+  const opt = (x, y, type) => new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 77, pointerType: 'mouse', isPrimary: true, clientX: x, clientY: y, buttons: type === 'pointerup' ? 0 : 1 });
+  const sc = cv.setPointerCapture, rc = cv.releasePointerCapture; cv.setPointerCapture = () => {}; cv.releasePointerCapture = () => {}; /* синтетический указатель захватить нельзя */
+  const x0 = r.left + r.width * .12, x1 = r.left + r.width * .88, ym = r.top + r.height * .55, N = 28;
+  cv.dispatchEvent(opt(x0, ym, 'pointerdown'));
+  for (let i = 1; i <= N; i++) { const k = i / N; cv.dispatchEvent(opt(x0 + (x1 - x0) * k, ym + Math.sin(k * 9) * r.height * .18, 'pointermove')); }
+  cv.dispatchEvent(opt(x1, ym, 'pointerup'));
+  if (sc) cv.setPointerCapture = sc; else delete cv.setPointerCapture; if (rc) cv.releasePointerCapture = rc; else delete cv.releasePointerCapture;
+  const okb = q('#sigok'); if (okb && vis(okb) && !okb.disabled) okb.focus(); /* дальше — Enter на «Подписать» */
+};
+const activate = (el) => {
+  if (el.matches('.brow, .z13')) { el.click(); return; }
+  if (el.matches('.pl9p')) { el.click(); stroke(el); return; }
+  stroke(el);
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') { tagKB(); return; }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const enter = e.key === 'Enter' || e.key === ' ';
+  if (!enter) return;
+  const a = document.activeElement;
+  if (a && a.matches && a.matches(KB)) { e.preventDefault(); e.stopImmediatePropagation(); activate(a); return; }
+  /* Q5 · реплики печатаются — Enter/Space показывают всё сразу (фокус на старой кнопке не мешает) */
+  const sk = q('#dlg .dlgskip');
+  if (sk && vis(sk) && !q('#dlg.p21all') && !(a && a.closest && a.closest('#modal, input, textarea, select'))) { e.preventDefault(); e.stopImmediatePropagation(); sk.click(); return; }
+  if (a && a.closest && a.closest('button, a, input, textarea, select, summary') && vis(a)) return;
+  /* Q6 · «Сводка ДСП» листается Enter/Space, как новости и доклады */
+  try {
+    if (typeof U !== 'undefined' && U.scr && U.scr.kind === 'dsp' && !U.busy && $('modal').hidden && $('start').hidden) {
+      const b = $('opts') && $('opts').querySelector('button:not([disabled])');
+      if (b) { e.preventDefault(); e.stopImmediatePropagation(); b.click(); }
+    }
+  } catch (err) {}
+}, true);
+})();
+</script>
