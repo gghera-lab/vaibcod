@@ -1,0 +1,493 @@
+<!-- ===== Пакет 22 · тест сюжета трёх сроков v2 (каркас): прецедент, лист сдержек, цена спасений, перехваты, ночь 4:12 ===== -->
+<style id="p22-plot">
+  #p22chip { position: fixed; left: 8px; bottom: 8px; z-index: 9999; font: 700 11px/1 var(--f-body, Georgia, serif); letter-spacing: .5px; padding: 6px 8px; border-radius: 4px;
+    background: #7a1420; color: #fff; border: 0; cursor: pointer; opacity: .85; }
+  #p22panel { position: fixed; left: 8px; bottom: 72px; z-index: 9999; width: min(300px, calc(100vw - 16px)); max-height: 70vh; overflow: auto;
+    background: #1d1a16; color: #f1e9d8; font: 12px/1.45 var(--f-body, Georgia, serif); padding: 10px 12px; border-radius: 6px; box-shadow: 0 6px 24px #0008; }
+  #p22panel b { color: #e7c873; } #p22panel .off { color: #8a7f70; text-decoration: line-through; }
+  .p22n { max-width: 640px; margin: 0 auto; text-align: left; }
+  .p22n small { display: block; letter-spacing: 3px; opacity: .7; margin-bottom: 6px; }
+  .p22n h2 { margin: 0 0 12px; font-size: clamp(28px, 6vw, 46px); }
+  .p22n p { margin: 0 0 12px; overflow-wrap: anywhere; }
+  .p22n ul { list-style: none; padding: 0; margin: 0 0 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px 14px; }
+  .p22n li { padding: 3px 0; border-bottom: 1px solid #ffffff22; }
+  .p22n li.off { opacity: .45; text-decoration: line-through; }
+  .p22n .p22btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .p22stamp { display: inline-block; border: 3px solid #b3262e; color: #b3262e; font: 900 clamp(18px, 4vw, 26px)/1 var(--f-body, Georgia, serif); letter-spacing: 3px; padding: 6px 12px; transform: rotate(-4deg); margin: 0 0 14px; }
+  #p22sheet { position: fixed; left: 24px; top: 74px; z-index: 9998; font: 700 12px/1 Georgia, serif; padding: 6px 9px; border-radius: 4px; cursor: pointer;
+    background: #f3ead6; color: #2a2118; border: 1px solid #b59a62; box-shadow: 0 2px 8px #0005; }
+  @media (pointer: coarse), (max-width: 900px) { #p22sheet { min-height: 36px; padding: 9px 12px; font-size: 13px; } }
+  #p22sheet i { font-style: normal; letter-spacing: 2px; margin-left: 6px; color: #7a1420; }
+  #p22list { position: fixed; left: 24px; top: 108px; max-height: calc(100vh - 120px); overflow: auto; z-index: 9998; width: min(260px, calc(100vw - 16px)); background: #f3ead6; color: #2a2118; border: 1px solid #b59a62;
+    padding: 10px 12px; border-radius: 6px; font: 14px/1.4 Georgia, serif; box-shadow: 0 6px 24px #0007; }
+  #p22list ul { list-style: none; margin: 6px 0; padding: 0; } #p22list li { padding: 2px 0; border-bottom: 1px dotted #b59a6288; }
+  #p22list li.off { text-decoration: line-through; opacity: .55; } #p22list li.dim { opacity: .45; font-style: italic; } #p22list small { opacity: .7; }
+  .banr.p22mark { color: #9a2a22; }
+  /* 22b · меню без лишнего: покупки теперь в сейфе, анимации/темп/наезд камеры/подсказка убраны */
+  #mbody .menu > [data-act="shop"], #mbody .menu > [data-act="rm"], #mbody [data-p21="tempo"], #mbody [data-p21="think"], #mbody [data-t19] { display: none !important; }
+  /* 22b · нижней панели нет — сцена на всю высоту */
+  #p22hold { display: none !important; }
+  /* пока идёт обучение, невидимая панель лежит на сейфе, чтобы подсветка попала на него */
+  #desk.p22ghost { position: absolute !important; left: 8.6% !important; top: 12.2% !important; width: 14.6% !important; height: 26.4% !important; opacity: 0 !important; pointer-events: none !important; display: block !important; margin: 0 !important; padding: 0 !important; overflow: hidden; z-index: 1; }
+  html body #screenwrap .stg13 > #desk.p22ghost.p8, html body #screenwrap .stg13 > #desk.p22ghost.d19, html body #screenwrap .stg13 > #desk.p22ghost { left: 8.6% !important; top: 12.2% !important; width: 14.6% !important; height: 26.4% !important; right: auto !important; bottom: auto !important; max-width: none !important; min-width: 0 !important; grid-template-columns: none !important; }
+  #desk.p22ghost > * { display: none !important; }
+  #desk.p22ghost, #desk.p22ghost * { visibility: hidden !important; }
+  html body #screenwrap #desk.p22ghost > .dk-money, html body #screenwrap #desk.p22ghost .m19buy, #desk.p22ghost > .dk-money, #desk.p22ghost .m19buy { max-width: 100% !important; max-height: 100% !important; flex: none !important; box-sizing: border-box !important; display: block !important; position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; min-width: 0 !important; }
+  #left > #screenwrap { flex: 1 1 auto !important; height: auto !important; min-height: 0; }
+  /* 22d · единые рамки: верх и низ сцены на одной линии с листом справа (у листа отступ папки 12px + рамка 2px) */
+  @media (min-width: 901px) { #left > #screenwrap { margin-top: 14px !important; margin-bottom: 14px !important; } #p22sheet { top: 92px !important; } #p22list { top: 126px !important; } }
+  /* 22b · сейф на стене вместо картины */
+  #p22safeBtn[hidden] { display: none !important; }
+  #p22safeBtn { position: absolute; left: 8.6%; top: 12.2%; width: 14.6%; height: 26.4%; z-index: 6; padding: 0; border: 0; background: none; cursor: pointer;
+    filter: drop-shadow(0 6px 10px #0009); transition: transform .15s; }
+  #p22safeBtn svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+  #p22safeBtn span { position: absolute; left: 50%; bottom: -4px; transform: translate(-50%, 100%); font: 700 11px/1 var(--f-body, Georgia, serif); letter-spacing: 1px; text-transform: uppercase;
+    color: #f3ead6; background: #1d1a16cc; padding: 3px 6px; border-radius: 3px; opacity: 0; transition: opacity .15s; white-space: nowrap; }
+  #p22safeBtn:hover, #p22safeBtn:focus-visible { transform: scale(1.04); outline: 2px solid #e8c14b; outline-offset: 3px; }
+  #p22safeBtn:hover span, #p22safeBtn:focus-visible span { opacity: 1; }
+  #p22safe #desk { display: flex !important; flex-direction: column; gap: 10px; position: static !important; width: 100% !important; height: auto !important; margin: 0 !important; }
+  #p22safe #desk > * { width: auto !important; max-width: 100% !important; position: static !important; }
+  html body #p22safe #desk.p8 > .dk-bills, html body #p22safe #desk > .dk-bills, #p22safe .dk-bills { display: none !important; }
+  /* 22c · «Подписать указ» и «Позвонить»: одинаковые строки во всю ширину, текст слева */
+  .actpanel.ap17p { display: flex !important; flex-direction: column; gap: 10px; }
+  .actpanel.ap17p > .ap11s { width: 100% !important; max-width: none !important; margin: 0 !important; box-sizing: border-box; }
+  .ap17p .ap11s > summary { justify-content: flex-start !important; width: 100%; box-sizing: border-box; text-align: left; }
+  .ap17p .ap11s > summary .ap17t { text-align: left; justify-items: start; }
+  .ap17p .ap11s > summary::after { content: '▾'; font-size: 14px; transition: transform .15s; }
+  .ap17p .ap11s[open] > summary::after { transform: rotate(180deg); }
+  .ap17p .ap11l > * { flex-shrink: 0 !important; height: auto !important; }
+  .ap17p .ap11l { max-height: 340px !important; padding: 8px !important; gap: 6px !important; background: #f4ead0; }
+  .ap17p .ap11i { display: grid !important; grid-template-columns: 26px 1fr auto; align-items: center; gap: 10px; min-height: 0 !important; padding: 8px 10px !important;
+    text-align: left !important; border-radius: 3px; transition: background .12s, transform .12s; }
+  .ap17p .ap11i:not(.off):not(.used):hover { background: #fff3cf !important; transform: translateX(2px); }
+  .ap17p .ap11i > img { width: 22px !important; height: 22px !important; image-rendering: pixelated; }
+  .ap17p .ap11i .t { font: 600 14px/1.25 var(--f-body, Georgia, serif) !important; text-align: left !important; }
+  .ap17p .ap11i .go { font: 700 12px var(--f-body, Georgia, serif); color: #8a5a20; white-space: nowrap; }
+  .ap17p .ap11i.ph { grid-template-columns: 54px 1fr auto; }
+  .ap17p .ap11i.ph canvas { width: 52px !important; height: 36px !important; margin: 0 !important; border: 1px solid #c9b88a; background: #e9dcbc; image-rendering: pixelated; }
+  .ap17p .ap11i.ph .t { display: flex !important; flex-direction: column; align-items: flex-start !important; gap: 2px; }
+  .ap17p .ap11i.ph .t small { font: 12px var(--f-body, Georgia, serif); color: #7a6a50; }
+  .ap17p .ap11i.ph .num { font: 700 14px/1 var(--f-body, Georgia, serif) !important; font-variant-numeric: tabular-nums; color: #2f3f8a; white-space: nowrap; letter-spacing: 1px; }
+  .ap17p .ap11i.used, .ap17p .ap11i.off { opacity: .55; }
+  /* 22b · награждение */
+  #awzone { cursor: pointer; }
+  #awq.p22off, #awq:disabled { opacity: .45; filter: grayscale(1); cursor: default; pointer-events: none; }
+  .p22line { border-left: 3px solid #7a1420; padding-left: 10px; font-style: italic; }
+</style>
+<script id="p22-plot-js">
+(() => {
+  /* ---------- состояние ---------- */
+  const LINES = [['ks', 'Конституционный суд'], ['vs', 'Верховный суд'], ['duma', 'Дума'], ['sf', 'Совет Федерации'], ['pro', 'Прокуратура'], ['hvost', '«Вечерний Хвост»'], ['izb', 'Избирком'], ['ul', 'Улица']];
+  // какая строка гаснет, когда окружение спасает от провала по этому показателю
+  const LINE_OF = { kz: 'pro', dv: 'ul', sv: 'hvost', bz: 'sf', ek: 'vs', el: 'duma', pr: 'izb', kr: 'pro', zd: 'ks', mo: 'sf' };
+  const P22 = (S) => { if (!S.p22) S.p22 = { prec: 0, off: [], res: {}, att: [], attP: 0, clean: {}, coerce3: 0, night: null, log: [] }; return S.p22; };
+  const alive = (S) => LINES.length - P22(S).off.length;
+  const note = (S, t) => { const p = P22(S); p.log.push(`${S.term}·${S.week}: ${t}`); if (p.log.length > 40) p.log.shift(); };
+  const prec = (S, d, why) => { P22(S).prec += d; note(S, `прецедент ${d > 0 ? '+' : ''}${d} — ${why}`); };
+  function gash(S, k, forced) {
+    const p = P22(S); let id = forced || LINE_OF[k];
+    if (forced && p.off.includes(forced)) return null;
+    if (!id || p.off.includes(id)) id = (LINES.find(([x]) => !p.off.includes(x)) || [])[0];
+    if (!id) { prec(S, -1, 'гасить больше нечего'); return null; }
+    p.off.push(id); const n = LINES.find(([x]) => x === id)[1]; note(S, `погасла строка: ${n}`);
+    try { toast(`Погасла строка: ${n}`); } catch (e) {}
+    return n;
+  }
+
+  /* ---------- «На волоске»: в I–II проиграть нельзя, но каждое следующее спасение дороже ---------- */
+  function rescued(S, end) {
+    const p = P22(S); const n = p.res[S.term] = (p.res[S.term] || 0) + 1; const k = (RESCUE_FIX[end] || [])[0];
+    note(S, `спасение № ${n} в сроке ${S.term}`);
+    if (n >= 2) gash(S, k);
+    if (n >= 3) prec(S, -1, `${n}-е спасение за срок`);
+    if (n >= 4) { p.coerce3++; if (!hasF(S, 'p22_tenhand')) S.flags.push('p22_tenhand'); note(S, '+1 принуждение в III сроке; следующий срок начнётся с Тени'); }
+  }
+  const SC22 = secondCard;
+  secondCard = function (S, end) {
+    const scr = SC22.apply(this, arguments);
+    if (!IS8(S) || S.term > 2 || !RESCUE_FIX[end]) return scr;
+    const E = ENDINGS[end] ? ENDINGS[end].t : end; const n = (P22(S).res[S.term] || 0) + 1;
+    const shadow = { l: 'Полковник Тень: «Особый режим. До утра»', p22res: end, imm: 1 };
+    const c = scr && scr.card ? Object.assign({}, scr.card) : { id: 'p22res:' + S.term + ':' + end, _second: 1, type: 'office', who: 'ten', f: 0, sev: 3, noBan: 1, nolock: 1, br: 'vl',
+      x: `«${E}» — вот что будет утром. Звонков больше нет, денег не хватит. Тень молча кладёт на стол указ об особом режиме.`, o: [] };
+    let o = (c.o || []).filter(x => !x.end);
+    if (!o.length) o = [shadow];
+    c.o = o; c.t = 'На волоске';
+    c.d = ['В I–II сроке проиграть нельзя: утро наступит. Но каждое следующее спасение стоит дороже.', n >= 2 ? 'Это спасение погасит одну строку в листе сдержек.' : 'Первое спасение за срок — без гашения строки.'];
+    let s2 = cardScreen(S, c); s2.second = end;
+    if (!(s2.avail || []).some(Boolean) && !o.includes(shadow)) { c.o = o.concat([shadow]); s2 = cardScreen(S, c); s2.second = end; }
+    return s2;
+  };
+  const CH22 = choose;
+  choose = function (S, scr, i) {
+    const o = scr && scr.kind === 'card' && scr.card && scr.card.o ? scr.card.o[i] : null;
+    if (o && o.p22res && IS8(S)) {
+      const [k, v] = RESCUE_FIX[o.p22res]; S.st[k] = v;
+      const applied = applyEffects(S, { kr: 3, sv: -5, dv: -3 }, 'Особый режим', true);
+      try { karmaAdd(S, -25); } catch (e) {}
+      try { ldAdd9(S, 'На волоске: особый режим Тени', 'ten', scr.card, 'forced'); } catch (e) {}
+      rescued(S, o.p22res); advance(S, 0);
+      return { applied, votes: [], kind: 'card', big: 1, delayed: false, end: S.ended || checkEnd(S) };
+    }
+    const isRes = !!(o && scr.second && IS8(S) && S.term <= 2 && (o.rescue8 || o.rescue9));
+    const r = CH22.apply(this, arguments);
+    if (isRes) rescued(S, scr.second);
+    return r;
+  };
+
+  /* ---------- чистый срок: ни одной записи своей рукой ---------- */
+  const NT22 = nextTerm;
+  nextTerm = function (S0) {
+    try { if (IS8(S0) && S0.term <= 2 && !P22(S0).clean[S0.term]) { P22(S0).clean[S0.term] = 1; if (!ldTermN9(S0)) prec(S0, 1, `чистый срок ${S0.term}`); } } catch (e) {}
+    return NT22.apply(this, arguments);
+  };
+
+  /* ---------- перехваты: уход в I–II не отменяет выбор, а записывается как «ПОПЫТКА» ---------- */
+  const EXIT = { p8_quiet: 'Заявление', resign_term: 'Заявление', lost_honest: 'Утро после выборов', lost_election: 'Утро после выборов', fals_fail: 'Утро после выборов',
+    one_term: 'Сейф', two_terms: 'Строчку вписали без вас', p9_two_honest: 'Строчку вписали без вас', tandem: 'Второе чтение' };
+  const EXIT_X = {
+    'Заявление': 'Заявление об отставке так и не дошло до Совета Федерации. Утром правая рука кладёт его вам обратно на стол: «Вы устали. Это пройдёт».',
+    'Утро после выборов': 'К утру итог переписан. Председатель избиркома поздравляет вас по телефону, не дожидаясь вопроса.',
+    'Сейф': 'Ваши вещи уже собраны, но сейф с документами не открывается. «Без вас тут всё развалится», — говорят те, кто знает код.',
+    'Строчку вписали без вас': 'Во втором чтении в поправку вписали одну строчку. Вы её не вносили. Ваши прежние сроки больше не считаются.',
+    'Второе чтение': 'Во втором чтении в поправку вписали одну строчку. Вы её не вносили.'
+  };
+  function intercept(id) {
+    const p = P22(S); const t = EXIT[id]; p.att.push({ term: S.term, id, t }); note(S, `перехват: ${t} (${id})`);
+    if (!p.attP) { p.attP = 1; prec(S, 1, 'попытка уйти'); }
+    try { ldAdd9(S, `ПОПЫТКА: ${(ENDINGS[id] || {}).t || id}`, 'pr', null, 'forced'); } catch (e) {}
+    const first = p.att.length === 1;
+    setScene({ bg: 'pov', who: null, mode: 'end' });
+    const box = $('end'); box.hidden = false;
+    box.innerHTML = `<div class="trailer"><div class="tr-in"><div class="b18 p22n"><small>${S.term} СРОК · ПЕРЕХВАТ</small><h2>${esc(t)}</h2><div class="p22stamp">ПЕРЕХВАЧЕНО</div>
+      <p>Вы выбрали: «${esc((ENDINGS[id] || {}).t || id)}».</p><p>${esc(EXIT_X[t])}</p>
+      ${first ? '<p class="p22line">Вы хотели уйти. Это запомнят — и не только они. Ваш выбор лёг в дело записью «ПОПЫТКА» и сработает в ночь 4:12.</p>' : '<p class="p22line">Ещё одна попытка. Её тоже запомнят.</p>'}
+      <div class="p22btns"><button class="bigbtn" id="p22go">Дальше</button></div></div></div></div>`;
+    try { AU.sfx('stamp'); } catch (e) {}
+    $('p22go').onclick = () => {
+      S.ended = null; S.finalEnd = null; box.hidden = true;
+      if (S.week > TURNS(S) || /^(one_term|two_terms|p9_two_honest|tandem)$/.test(id)) {
+        if (S.term === 2 && !hasF(S, 'zero_ok')) S.flags.push('zero_ok', 'p22_line');
+        nextTerm(S); try { store.set(ckptKey(S.term), S); } catch (e) {}
+      }
+      saveGame(); updTop(); try { updDesk(); } catch (e) {} next();
+    };
+  }
+
+  /* ---------- ночь 4:12: любой конец III срока, включая проигрыши ---------- */
+  const EARLY = { p9_collapse3: ['министр финансов', 'приносит заявление об отставке «по состоянию экономики»'], war9: ['начальник Генштаба', 'держит приказ о наступлении'],
+    health: ['начальник охраны', 'решает, кого пустить к вашей постели'], impeach_kr: ['генеральный прокурор', 'ждёт в приёмной с делом'], impeach: ['комендант', 'должен вывести вас из кабинета'] };
+  const PATH = { p9_final_tigr: ['пульт', 'охранник у пульта вентиляции'], p8_final: ['пульт', 'начальник смены бункера'], term4_up: ['пульт', 'начальник смены бункера'], term4_done: ['пульт', 'начальник смены бункера'],
+    fin_honest: ['протокол', 'председатель избиркома'], fin_forever: ['протокол', 'председатель избиркома'], fin_resign: ['протокол', 'председатель избиркома'] };
+  const ITEM = { пульт: 'пульт с одной кнопкой', протокол: 'протокол итогов и ручка', телефон: 'телефон с длинными гудками', лист: 'лист с факсимиле вашей подписи' };
+  const kotovTrust = (S) => !hasF(S, 'hero_gone') && !hasF(S, 'hero_burned') && !hasF(S, 'hero_exiled');
+  function verdict(S) { const P = P22(S).prec, C = alive(S);
+    if (P >= 4) return 'refuse'; if (P >= 1) return C >= 4 ? 'refuse' : 'call'; return C > 2 ? 'call0' : 'obey'; }
+  function night(id, done) {
+    const p = P22(S); const E = ENDINGS[id] || { t: id }; const early = EARLY[id];
+    if (!p.clean[3] && !(S.ld || []).some(x => x.kind !== 'kurs' && x.kind !== 'forced' && x.term >= 3)) { p.clean[3] = 1; prec(S, 1, 'чистый III срок'); }
+    const [item, who] = early ? ['лист', early[0]] : (PATH[id] || ['телефон', 'начальник охраны']);
+    const box = $('end'); setScene({ bg: 'pov', who: null, mode: 'end' }); box.hidden = false;
+    const frame = (small, h, body, btns) => { box.innerHTML = `<div class="trailer"><div class="tr-in"><div class="b18 p22n"><small>${small}</small><h2>${h}</h2>${body}<div class="p22btns">${btns}</div></div></div></div>`; };
+    // 1 · перекличка
+    const att = p.att.length ? `<p>Вы пытались уйти: ${p.att.map(a => `в ${a.term} сроке («${esc(a.t)}»)`).join(', ')}.</p>` : '';
+    frame('НОЧЬ · 4:12 · ПЕРЕКЛИЧКА', early ? 'Ночь наступила раньше' : '4:12',
+      `<p>${early ? `«${esc(E.t)}». За вами пришли не утром, а сейчас.` : 'Последняя ночь третьего срока. На столе — те, кто ещё может вас остановить.'}</p>
+       <ul>${LINES.map(([k, n]) => `<li class="${p.off.includes(k) ? 'off' : ''}">${p.off.includes(k) ? '○' : '●'} ${esc(n)}</li>`).join('')}</ul>${att}`,
+      '<button class="bigbtn" id="p22n1">Дальше</button>');
+    try { AU.sfx('page'); } catch (e) {}
+    $('p22n1').onclick = () => {
+      // 2 · приказ
+      frame('НОЧЬ · 4:12 · ПРИКАЗ', 'Приказ', `<p>На столе — ${esc(ITEM[item])}.</p><p>${early ? `Тот, кто пришёл, держит вашу подпись: ${esc(early[0])} ${esc(early[1])}.` : `Приказ подписан вашим факсимиле. Исполнять его будет ${esc(who)}.`}</p>`,
+        '<button class="bigbtn" id="p22n2">Дальше</button>');
+      $('p22n2').onclick = () => {
+        // 3 · исполнитель
+        const v = verdict(S); const trust = kotovTrust(S);
+        const fin = (res, how) => {
+          p.night = { id, res, who, how, prec: p.prec, alive: alive(S) }; note(S, `4:12: ${who} — ${res === 'refuse' ? 'отказался' : 'подчинился'} (${how})`);
+          frame('НОЧЬ · 4:12 · ИСПОЛНИТЕЛЬ', res === 'refuse' ? 'Отказ' : 'Исполнено',
+            `<p>${res === 'refuse' ? `${esc(who[0].toUpperCase() + who.slice(1))} откладывает приказ: «Незаконных приказов я не исполняю. У нас так уже было».` : `${esc(who[0].toUpperCase() + who.slice(1))} исполняет приказ. Никто из тех, кто отказывался раньше, ему не пример.`}</p>`,
+            '<button class="bigbtn" id="p22n4">К утру</button>');
+          $('p22n4').onclick = done;
+        };
+        if (id === 'p8_spy') {
+          frame('НОЧЬ · 4:12 · ДВА ЗВОНКА', 'Друг', `<p>Звонит Борис Барсуков: «На полосе стоит самолёт. Лети, пока они спорят». ${trust ? 'По второй линии можно набрать Котова — он ещё верит вам.' : 'Котов больше не возьмёт трубку.'}</p>`,
+            `<button class="bigbtn" id="p22friend">✈ Ответить Барсукову</button>${trust ? '<button class="bigbtn" id="p22call">☎ Позвонить Котову</button>' : ''}<button class="bigbtn alt" id="p22nocall">Ждать</button>`);
+          $('p22friend').onclick = () => { p.night = { id, res: 'friend', who: 'Борис Барсуков', how: 'самолёт', prec: p.prec, alive: alive(S) }; note(S, '4:12: ответили Барсукову'); done(); };
+          if ($('p22call')) $('p22call').onclick = () => { try { AU.sfx('phone.ring'); } catch (e) {} fin('refuse', 'звонок Котову'); };
+          $('p22nocall').onclick = () => fin(v === 'refuse' ? 'refuse' : 'obey', 'без звонка');
+          return;
+        }
+        if (v === 'refuse' || v === 'obey') return fin(v, 'прецедент и строки');
+        const canCall = trust;
+        frame('НОЧЬ · 4:12 · ИСПОЛНИТЕЛЬ', 'Исполнитель', `<p>${esc(who[0].toUpperCase() + who.slice(1))} колеблется. Телефон на столе.</p>${canCall ? '<p>Котову можно позвонить. Он вам ещё верит.</p>' : '<p>Котову звонить бесполезно: он вам больше не верит.</p>'}`,
+          `${canCall ? '<button class="bigbtn" id="p22call">☎ Позвонить Котову</button>' : ''}<button class="bigbtn alt" id="p22nocall">Ждать</button>`);
+        if ($('p22call')) $('p22call').onclick = () => { try { AU.sfx('phone.ring'); } catch (e) {} fin('refuse', 'звонок Котову'); };
+        $('p22nocall').onclick = () => fin(v === 'call0' ? 'obey' : 'obey', 'без звонка');
+      };
+    };
+  }
+
+  /* ---------- endGame: перехваты в I–II, ночь 4:12 в III ---------- */
+  const EG22 = endGame;
+  endGame = function (id) {
+    if (S && IS8(S)) {
+      const E = ENDINGS[id] || {};
+      if (S.term <= 2 && EXIT[id]) return intercept(id);
+      if (S.term >= 3 && id !== 'term3_done' && !(E.cont && S.term < 4) && !P22(S).night) {
+        return night(id, () => { const id2 = remap(id, P22(S).night); if (id2 !== id) { P22(S).night.from = id; note(S, `финал: ${id} → ${id2}`); } S.ended = id2; const r = EG22.call(this, id2); addLine(); return r; });
+      }
+    }
+    const r = EG22.apply(this, arguments); addLine(); return r;
+  };
+  // решение исполнителя в 4:12 меняет финал: отказ спасает от тёмного конца, подчинение — отнимает светлый
+  const FIN_REFUSE = { p9_final_tigr: 'term4_up', p8_coup: 'term4_up', term4_done: 'term4_up', p8_final: 'term4_up', kogtev_coup: 'arrest', fin_forever: 'fin_honest', p8_spy: 'term4_up' };
+  const FIN_OBEY = { term4_up: 'p8_final', fin_honest: 'fin_forever', p8_spy: 'p8_final' };
+  function remap(id, n) { if (!n) return id; if (n.res === 'friend') return 'p8_spy'; const m = n.res === 'refuse' ? FIN_REFUSE : FIN_OBEY; return (m[id] && ENDINGS[m[id]]) ? m[id] : id; }
+  function addLine() {
+    try { const n = S && S.p22 && S.p22.night; const box = $('end'); if (!n || !box || box.hidden || box.querySelector('.p22line')) return;
+      const et = box.querySelector('.etext') || box.querySelector('.trailer .tr-x'); if (!et) return; /* газета итогов или первый слайд финального трейлера */ const pl = document.createElement('p'); pl.className = 'p22line';
+      pl.textContent = n.res === 'friend' ? `В 4:12 вы ответили Барсукову. Самолёт ждал на полосе.` : `В 4:12 ${n.who} ${n.res === 'refuse' ? 'отказался исполнять приказ' : 'исполнил приказ'}${n.from ? ' — и утро наступило иначе' : ''}. Живых строк в листе: ${n.alive} из 8.`; et.after(pl); } catch (e) {}
+  }
+
+  // газету финала поздние слои перерисовывают (анимации) — строку про 4:12 дописываем, пока она не появится
+  setInterval(() => { try { const b = $("end"); if (b && !b.hidden && S && S.p22 && S.p22.night) addLine(); } catch (e) {} }, 400);
+
+  /* ---------- источники гашения: какие решения гасят какую строку ---------- */
+  const SRC = {
+    p8_zero: [[/обнулением/, 'ks']], p8_t4doc: [[/постановление/, 'ks']], p8_t4regent: [[/Признать регентство/, 'ks']],
+    p9_tigr3: [[/через су/, 'vs']], p9_gov2: [[/Арестовать за клевету/, 'vs'], [/сенатор/, 'sf']], p8_spy3a: [[/Арестовать тихо/, 'vs']],
+    p9_h2_media: [[/Подать в суд/, 'vs'], [/Выкупить канал/, 'hvost']],
+    p9_h2_duma: [[/распустить Думу/, 'duma']], p10_env6: [[/без Думы/, 'duma']],
+    p9_gov: [[/Совете Фед/, 'sf']], p9_fronda: [[/Отрешить ещё двоих/, 'sf']], p9_gov3: [[/Отрешить всех|федеральное управление/, 'sf']],
+    p8_pros: [[/Шептунов|Громобоев/, 'pro']], p9_pros2: [[/Освободить её/, 'pro']], p8_probe2: [[/Приказать остановиться|на повышение/, 'pro']],
+    p8_asya2: [[/Закрыть «Вечерний Хвост»/, 'hvost']], p8_probe1: [[/Надавить на редакцию/, 'hvost']], p9_book2: [[/Запретить книгу/, 'hvost']],
+    p8_leak: [[/Заблокировать мессенджеры/, 'hvost']], p8_t4asya: [[/Арестовать/, 'hvost']],
+    p8_cik: [[/Поблагодарить ЦИК/, 'izb']], p8_camp1: [[/план правой руки/, 'izb']], p8_camp2: [[/план правой руки/, 'izb']],
+    p9_cands: [[/Снять Честнову/, 'izb']], p9_award2: [[/главе избиркома|Обоим/, 'izb']], p9_award2h: [[/Замять/, 'izb']],
+    p8_tariff: [[/^Разогнать/, 'ul']], p8_square2: [[/^Разогнать/, 'ul']], p8_strike3: [[/силой/, 'ul']], p9_sit_bz: [[/задержаний/, 'ul']], p8_crime2_1: [[/Армию на улицы/, 'ul']]
+  };
+  const LN = (id) => (LINES.find(([x]) => x === id) || [])[1];
+  const lineOf = (c, o) => { const r = c && o && SRC[c.id]; if (!r) return null; const m = r.find(([re]) => re.test(String(o.l || ''))); return m ? m[1] : null; };
+  // лист выдают на присяге; строка загорается, когда игрок впервые встречает решение, которое может её погасить
+  function light(S, ids) {
+    const p = P22(S); if (!p.sheet) return; p.lit = p.lit || [];
+    const nw = ids.filter(id => !p.lit.includes(id)); if (!nw.length) return;
+    p.lit.push(...nw); note(S, `загорелась строка: ${nw.map(LN).join(', ')}`);
+    try { toast(`Лист сдержек: ${nw.map(LN).join(', ')}. ${nw.length > 1 ? 'Они мешают вам — и защищают вас' : 'Она мешает вам — и защищает вас'}.`); } catch (e) {}
+    sheetChip();
+  }
+  // сцены, где сдержка впервые видна в деле, даже если погасить её тут нельзя
+  const SEEN = { p8_pm: ['duma'], p9_posl: ['sf'], p9_ev_flood: ['ul'], p8_leak: ['hvost'], p8_pros: ['pro'] };
+  const linesOfCard = (c) => [...new Set((SEEN[c.id] || []).concat((c.o || []).map(o => lineOf(c, o)).filter(Boolean)))];
+  const CS22 = cardScreen;
+  cardScreen = function (S, c) {
+    const scr = CS22.apply(this, arguments);
+    try { if (IS8(S) && c && (SRC[c.id] || SEEN[c.id])) light(S, linesOfCard(c)); } catch (e) {}
+    return scr;
+  };
+  const RO22 = renderOptions;
+  renderOptions = function () {
+    const r = RO22.apply(this, arguments);
+    try { const scr = U.scr; if (!S || !scr || !scr.card || !SRC[scr.card.id]) return r; const p = P22(S);
+      [...$('opts').children].forEach((b, i) => { const id = lineOf(scr.card, scr.card.o[i]); const ob = b.querySelector('.ob');
+        if (!id || !ob || !(p.lit || []).includes(id) || p.off.includes(id) || ob.querySelector('.p22mark')) return;
+        const m = document.createElement('span'); m.className = 'banr p22mark'; m.textContent = `⊘ Погасит строку: ${LN(id)}`; ob.appendChild(m); });
+    } catch (e) {}
+    return r;
+  };
+
+  /* ---------- три гарантированные встречи с отказом ---------- */
+  const NEWC = [
+    { id: 'p22_svodka', term: 1, at: 5, type: 'office', who: 'hero9', t: 'Сводка', f: 0, sev: 3,
+      x: 'Капитан Тимофей Котов кладёт на стол сводку по дамбе. Внизу — пустая строка для подписи. «В министерстве написали “пострадавших нет”. Я был там. Сорок семь. Подписывать не буду. Можете меня снять».',
+      lines: [['hero9', 'Незаконных приказов я не исполняю. Враньё про погибших — это приказ, просто написанный мягко.']],
+      d: ['Котов отказался подписать ложную сводку. Что вы сделаете с тем, кто отказался, — запомнят.', 'Опубликовать правду дорого сейчас. Отправить Котова подальше — дёшево сейчас.'],
+      o: [ { l: 'Опубликовать правду: сорок семь погибших', e: { dv: 2, sv: 3, el: -4 }, p22prec: 2, p22echo: 'В армии говорят: капитан отказался врать — и президент его поддержал.' },
+           { l: 'Найти другого подписанта, Котова оставить на службе', e: { el: -1, sv: -1 }, p22prec: 1, p22echo: 'В армии говорят: капитан отказался подписывать — и его не тронули.' },
+           { l: 'Отправить Котова «на усиление» в Заполярный округ', e: { el: 4, sv: -3 }, p22prec: -2, p22flags: ['hero_exiled', 'hero_gone'], p22echo: 'В армии говорят: капитан отказался врать — и уехал за Полярный круг.' } ] },
+    { id: 'p22_pochti', term: 2, at: 7, type: 'office', who: 'ten', t: 'Почти', f: 0, sev: 3,
+      x: 'Полковник Тень докладывает сухо: ночью у «Мурэнерго» разгоняли пикет — его приказом, без вашего. Лейтенант Усов вывел свой взвод из оцепления: «Незаконных приказов не исполняю». Тень просит подписать увольнение.',
+      lines: [['ten', 'Один лейтенант — это мелочь. Сто лейтенантов, которые видели, что ему ничего не было, — это уже не мелочь.']],
+      d: ['Приказ отдавали не вы. Но что будет с отказавшимся — решаете вы.'],
+      o: [ { l: 'Наградить Усова открыто — указом', e: { el: -4, sv: 3, dv: 1 }, p22prec: 2, p22echo: 'В армии говорят: за отказ наградили. Указом.' },
+           { l: 'Оставить на службе тихо, Тени — отказать', e: { el: -2 }, p22prec: 1, p22echo: 'В армии говорят: лейтенанта не тронули.' },
+           { l: 'Объявить выговор — для порядка', e: { el: 1 }, p22prec: -1, p22echo: 'В армии говорят: за отказ — выговор.' },
+           { l: 'Подписать увольнение', e: { el: 3, sv: -2 }, p22prec: -2, p22echo: 'В армии говорят: за отказ уволили. Тень доволен.' } ] },
+    { id: 'p22_1408', term: 2, at: 9.3, type: 'office', who: 'pr', t: 'Протокол 1408', f: 0, sev: 3,
+      x: 'На участке № 1408 вбросили без вас — «на всякий случай», люди правой руки. Член комиссии Зинаида Котофеевна отказалась подписать протокол и написала особое мнение. Председатель избиркома просит вывести её из комиссии.',
+      lines: [['pr', 'Это один участок. Зачем вам эта бабушка? Подпишите вывод — и забудем.']],
+      d: ['Вбрасывали не вы. Но протокол без подписи Зинаиды Котофеевны лежит у вас на столе.'],
+      o: [ { l: 'Поблагодарить её публично и отменить итоги участка', e: { el: -4, sv: 3, dv: 2 }, p22prec: 2, p22echo: '«Вечерний Хвост»: на участке 1408 итоги отменили — после особого мнения одной бабушки.' },
+           { l: 'Оставить её в комиссии, итоги не трогать', e: { el: -1 }, p22prec: 1, p22echo: 'В избиркоме говорят: Зинаиду Котофеевну не тронули.' },
+           { l: 'Промолчать: пусть избирком решает сам', e: {}, p22prec: 0 },
+           { l: 'Вывести её из комиссии', e: { el: 3, sv: -2 }, p22prec: -2, p22line: 'izb', p22echo: 'В избиркоме говорят: за особое мнение выводят из комиссии.' } ] }
+  ];
+  NEWC.forEach(c => { const x = Object.assign({ roles: ['pres'], p8: 1, p9: 1 }, c); ALLDECK.push(x); try { DECK_P3.push(x); } catch (e) {} });
+
+  // выбор: гасим строку источника, считаем прецедент, ставим флаги, отголосок через пару решений
+  const CH22b = choose;
+  choose = function (S, scr, i) {
+    const c = scr && scr.kind === 'card' && scr.card; const o = c && c.o ? c.o[i] : null;
+    const r = CH22b.apply(this, arguments);
+    try { if (o && IS8(S)) { const p = P22(S);
+      const id = o.p22line || lineOf(c, o); if (id) gash(S, null, id);
+      if (o.p22prec != null) prec(S, o.p22prec, `${c.t}: «${o.l}»`);
+      (o.p22flags || []).forEach(f => { if (!hasF(S, f)) S.flags.push(f); });
+      if (o.p22echo) (p.echo = p.echo || []).push({ at: S.dec + 2, t: o.p22echo });
+      if (c.id === 'p8_oath' && !p.sheet) { p.sheet = 1; p.lit = []; note(S, 'выдан лист сдержек');
+        try { toast('Вам выдали лист сдержек. Строки загорятся, когда вы встретите тех, кто вам мешает.'); } catch (e) {}
+        // всё, что игрок уже встретил до присяги (например, ЦИК), загорается сразу
+        light(S, [...new Set(p.off.concat(...S.used.map(id => CARD(id)).filter(x => x && x.id !== 'p8_oath' && (SRC[x.id] || SEEN[x.id])).map(linesOfCard)))]); sheetChip(); }
+    } } catch (e) {}
+    return r;
+  };
+  const NS22 = nextScreen;
+  nextScreen = function (S) {
+    try { const p = S && S.p22; if (p && p.echo && p.echo.length && p.echo[0].at <= S.dec) { const e = p.echo.shift(); toast(e.t); note(S, 'отголосок: ' + e.t); } } catch (e) {}
+    return NS22.apply(this, arguments);
+  };
+  const NT22b = nextTerm;
+  nextTerm = function (S0) { const r = NT22b.apply(this, arguments); try { if (IS8(S0) && S0.term >= 2) { const p = P22(S0); p.sheet = 1; light(S0, LINES.map(([k]) => k)); } } catch (e) {} return r; };
+
+  /* ---------- лист сдержек на экране ---------- */
+  function sheetChip() {
+    let b = $('p22sheet'); const p = S && S.p22;
+    if (!p || !p.sheet) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('button'); b.id = 'p22sheet'; b.type = 'button'; document.body.appendChild(b);
+      b.onclick = (e) => { e.stopPropagation(); const L = $('p22list'); if (L) { L.remove(); return; } const d = document.createElement('div'); d.id = 'p22list'; document.body.appendChild(d); sheetList(); }; }
+    const lit = p.lit || []; b.innerHTML = `Лист сдержек <i>${LINES.map(([k]) => !lit.includes(k) ? '·' : p.off.includes(k) ? '○' : '●').join('')}</i>`;
+    if ($('p22list')) sheetList();
+  }
+  function sheetList() {
+    const d = $('p22list'), p = S && S.p22; if (!d || !p) return; const lit = p.lit || [];
+    d.innerHTML = `<b>Лист сдержек</b><ul>${LINES.map(([k, n]) => !lit.includes(k) ? '<li class="dim">— ещё не встречалась —</li>' : `<li class="${p.off.includes(k) ? 'off' : ''}">${p.off.includes(k) ? '○' : '●'} ${esc(n)}</li>`).join('')}</ul><small>● мешает и защищает · ○ погасла</small>`;
+  }
+  setInterval(() => { try { sheetChip(); } catch (e) {} }, 1500);
+
+  /* ---------- 22b · без петли «На волоске»: спасение чинит все края и даёт передышку ---------- */
+  function repair(S) {
+    for (const s of STATS) { const v = S.st[s.k]; if (v == null) continue;
+      if (s.kind === 'two') { if (v <= 12) S.st[s.k] = 30; else if (v >= 88) S.st[s.k] = 70; } else if (s.kind === 'low' && v >= 88) S.st[s.k] = 70; }
+    if (S.st.kr >= 85) S.st.kr = 60; if (S.st.zd != null && S.st.zd <= 15) S.st.zd = 35;
+    delete S._hit9;
+  }
+  const rescued0 = rescued;
+  rescued = function (S, end) { rescued0(S, end); repair(S); P22(S).grace = S.week + 3; };
+  const CE22 = checkEnd;
+  checkEnd = function (S) {
+    const e = CE22.apply(this, arguments);
+    if (!e || !IS8(S) || S.term > 2) return e;
+    const p = P22(S);
+    // срок уже кончился — провал не роняет, просто доводим срок до конца
+    if (S.week > TURNS(S) || (p.grace || 0) >= S.week) { repair(S); return null; }
+    // третье спасение за срок и дальше — без карточки: окружение «улаживает» само, цена записывается
+    if ((p.res[S.term] || 0) >= 3) { if (p.autoW !== S.week) { p.autoW = S.week; rescued(S, e); try { toast('Тень снова всё «уладил» до утра. Цена записана в лист и в дело.'); } catch (x) {} } repair(S); return null; }
+    return e;
+  };
+
+  /* ---------- 22b · шкала срока: доля пройденных сюжетных сцен, а не номер недели ---------- */
+  const UT22 = updTop;
+  updTop = function () {
+    const r = UT22.apply(this, arguments);
+    try { if (S && IS8(S)) { const seg = $('weekseg'); const n = seg.children.length; const p = P22(S);
+      const all = ALLDECK.filter(c => c.at && !c.retired && forRole(c, S.role) && termOk(S, c));
+      const done = all.filter(c => S.used.includes(c.id)).length; const pend = all.filter(c => !S.used.includes(c.id) && reqOk(S, c)).length;
+      p.bar = p.bar || {}; const f = Math.max(p.bar[S.term] || 0, done / Math.max(1, done + pend)); p.bar[S.term] = f;
+      const w = Math.max(1, Math.min(n, Math.ceil(f * n)));
+      [...seg.children].forEach((el, i) => { el.className = i + 1 < w ? 'done' : i + 1 === w ? 'now' : ''; }); } } catch (e) {}
+    return r;
+  };
+
+  /* ---------- 22b · сейф вместо картины: деньги, покупки, бизнес, угроза; нижней панели больше нет ---------- */
+  const SAFE_SVG = `<svg viewBox="0 0 48 44" preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true">
+    <rect x="0" y="0" width="48" height="44" fill="#3a2616"/><rect x="1" y="1" width="46" height="42" fill="#1a120b"/><rect x="0" y="0" width="48" height="1" fill="#6b4a2c"/><rect x="0" y="43" width="48" height="1" fill="#120c07"/>
+    <rect x="2" y="2" width="30" height="38" fill="#2b2f36"/><rect x="2" y="2" width="30" height="2" fill="#4a505a"/><rect x="2" y="38" width="30" height="2" fill="#16181c"/>
+    <rect x="5" y="5" width="24" height="32" fill="#121418"/><rect x="5" y="20" width="24" height="2" fill="#3a3f48"/>
+    <rect x="7" y="13" width="8" height="5" fill="#e8c14b"/><rect x="7" y="13" width="8" height="1" fill="#fff1a8"/><rect x="16" y="14" width="8" height="4" fill="#d4a93a"/><rect x="11" y="10" width="8" height="3" fill="#e8c14b"/>
+    <rect x="7" y="29" width="12" height="6" fill="#4f8a4a"/><rect x="7" y="29" width="12" height="1" fill="#7fbf6f"/><rect x="9" y="27" width="12" height="3" fill="#5f9a56"/><rect x="21" y="30" width="6" height="5" fill="#d8d0bc"/>
+    <rect x="32" y="4" width="13" height="34" fill="#3a3f48"/><rect x="32" y="4" width="13" height="2" fill="#59606c"/><rect x="34" y="8" width="9" height="26" fill="#2b2f36"/>
+    <rect x="36" y="16" width="5" height="5" fill="#9aa2ad"/><rect x="38" y="17" width="1" height="3" fill="#2b2f36"/><rect x="2" y="40" width="4" height="3" fill="#16181c"/><rect x="28" y="40" width="4" height="3" fill="#16181c"/></svg>`;
+  function safeInit() {
+    const sw = $('screenwrap'), d = $('desk'), left = $('left'); if (!sw || !d || !left || $('p22safeBtn')) return;
+    const hold = document.createElement('div'); hold.id = 'p22hold'; hold.hidden = true; left.appendChild(hold); hold.appendChild(d);
+    const b = document.createElement('button'); b.id = 'p22safeBtn'; b.type = 'button'; b.title = 'Сейф: личные деньги, покупки, бизнес, угроза';
+    b.innerHTML = SAFE_SVG + '<span>Сейф</span>'; (sw.querySelector('.stg13') || sw).appendChild(b); // внутри сцены: едет вместе с камерой
+    b.addEventListener('click', (e) => { e.stopPropagation(); openSafe(); });
+  }
+  function openSafe() {
+    if (!S) return; try { AU.sfx('page'); } catch (e) {}
+    openModal('Сейф', '<div id="p22safe"></div>');
+    const box = $('p22safe'), d = $('desk'); if (box && d) { box.appendChild(d); try { updDesk(); } catch (e) {} }
+  }
+  const CM22 = closeModal;
+  closeModal = function () { const d = $('desk'), h = $('p22hold'); if (d && h && d.parentElement !== h) h.appendChild(d); return CM22.apply(this, arguments); };
+  safeInit();
+  // сейф висит только в кабинете (там, где была картина), не в зале, на улице и т. п.
+  setInterval(() => { const b = $("p22safeBtn"); if (!b) return; const on = !!S && typeof SC !== "undefined" && ["office", "pov"].includes(SC.bg); if (b.hidden === on) b.hidden = !on; }, 300);
+
+  /* ---------- 22b · награждение: кружок на груди тоже прикалывает орден, после — «Приколоть» серая ---------- */
+  document.addEventListener('click', (e) => {
+    const z = e.target.closest && e.target.closest('#awzone, .aw10hall'); const q = $('awq');
+    if (z && q && !q.disabled) { e.stopPropagation(); q.click(); }
+  }, true);
+  setInterval(() => { const pn = $('awpinned'), q = $('awq'); if (pn && q && pn.classList.contains('on') && !q.disabled) { q.disabled = true; q.classList.add('p22off'); } }, 250);
+
+  /* ---------- 22c · обучение в каждой новой партии; последний шаг — сейф ---------- */
+  // список шагов спрятан в модуле игры: шаг «Покупки» ищет '#desk .m19buy' — пока идёт обучение, невидимая панель лежит ровно на сейфе
+  const TOUR_SAFE = 'Сейф на стене — ваши личные деньги, покупки (охрана, броня, дегустатор), бизнес и угроза. Нажмите на сейф, чтобы открыть.';
+  setInterval(() => { try {
+    const t19 = $('t19'), d = $('desk'), hold = $('p22hold'), stg = document.querySelector('#screenwrap .stg13'); if (!t19 || !d || !hold || !stg) return;
+    const on = !t19.hidden;
+    if (on && d.parentElement === hold) { d.classList.add('p22ghost'); stg.appendChild(d); }
+    else if (!on && d.classList.contains('p22ghost')) { d.classList.remove('p22ghost'); if (d.parentElement === stg) hold.appendChild(d); }
+    const tt = t19.querySelector('.t19t'), tx = t19.querySelector('.t19x');
+    if (tt && tt.textContent === 'Покупки') { tt.textContent = 'Сейф'; if (tx) tx.textContent = TOUR_SAFE; }
+  } catch (e) {} }, 100);
+  // новая партия (у состояния ещё нет отметки) — обучение снова взводится
+  setInterval(() => { try { if (S && IS8(S) && S.term === 1) { const p = P22(S); if (!p.tourArm) { p.tourArm = 1; if (!window.P22_NOTOUR) PREF.tour19 = 0; } } } catch (e) {} }, 500);
+
+  /* ---------- 22d · кадр как в игре: сцена заполняет всю область (своя логика кадра убрана по просьбе пользователя) ---------- */
+
+  /* ---------- 22e · Котов после ссылки больше не появляется в сценах ---------- */
+  const KFIX = (s) => typeof s !== 'string' ? s : s.replace(/капитан(а|у|ом|е)?\s+(?:Тимофе\S+\s+)?Котов(а|у|ым|е)?/g, 'майор$1 Бакенбардов$2')
+    .replace(/Котов(а|у|ым|е)?(?![а-яё])/g, 'Бакенбардов$1').replace(/По-капитански/g, 'По-уставному');
+  try { const aw = CARD('p9_aw1_hero'); if (aw) aw.not = [].concat(aw.not || [], 'hero_exiled'); } catch (e) {}
+  const CSK = cardScreen;
+  cardScreen = function (S, c) {
+    try { if (c && IS8(S) && hasF(S, 'hero_exiled') && /^p9_(sit_|aw1_vil|gov$)/.test(String(c.id))) {
+      const sit = /^p9_sit_/.test(c.id); const k = Object.assign({}, c);
+      if (k.cast) k.cast = k.cast.filter(x => x !== 'hero9');
+      if (k.lines) k.lines = k.lines.filter(l => l && l[0] !== 'hero9').map(l => [l[0], sit ? KFIX(l[1]) : l[1]]);
+      if (sit) { k.x = KFIX(k.x); if (k.xf) { const f = c.xf; k.xf = (s) => KFIX(f(s)); } if (Array.isArray(k.d)) k.d = k.d.map(KFIX); k.o = (k.o || []).map(o => Object.assign({}, o, { l: KFIX(o.l) })); }
+      else k.o = (k.o || []).filter(o => !/Котов/.test(o.l || ''));
+      if (k.o.length) arguments[1] = k;
+    } } catch (e) {}
+    return CSK.apply(this, arguments);
+  };
+
+  /* ---------- 22e · двойной клик во время смены карточки: подтверждение без карточки тихо игнорируется ---------- */
+  const CI22 = confirmInner;
+  confirmInner = function (i) { const s = U.scr; if (!s || !s.card || !s.card.o || !s.card.o[i]) { U.busy = false; return Promise.resolve(); } return CI22.apply(this, arguments); };
+
+  // страховка: если внутренняя обёртка подтверждения упала на уже сменившейся карточке — не держать интерфейс «занятым»
+  window.addEventListener('unhandledrejection', (e) => { try { const r = e.reason, m = String(r && r.message), st = String(r && r.stack); if (/confirmInner/.test(st) && /reading '(card|o|act)'/.test(m)) { e.preventDefault(); U.busy = false; } } catch (x) {} });
+
+  /* ---------- тестовая панель: видно скрытые числа ---------- */
+  function panel() {
+    let pn = $('p22panel'); if (!pn) return; if (!S || !S.p22) { pn.innerHTML = 'Пакет 22: игра ещё не начата.'; return; }
+    const p = S.p22;
+    pn.innerHTML = `<b>Тест сюжета v2</b><br>Срок ${S.term}, неделя ${S.week}<br>Прецедент: <b>${p.prec}</b><br>Живых строк: <b>${alive(S)}</b> из 8<br>
+      ${LINES.map(([k, n]) => `<span class="${p.off.includes(k) ? 'off' : ''}">${esc(n)}</span>`).join(' · ')}<br>
+      Спасения: I — ${p.res[1] || 0}, II — ${p.res[2] || 0}<br>Попытки уйти: ${p.att.length}<br>Принуждений в III: +${p.coerce3}<br>
+      Котов доверяет: ${kotovTrust(S) ? 'да' : 'нет'}<br>Исполнитель сейчас: <b>${({ refuse: 'откажется', call: 'колеблется (звонок Котову)', call0: 'колеблется (звонок Котову)', obey: 'подчинится' })[verdict(S)]}</b><br>
+      ${p.night ? `4:12: ${esc(p.night.who)} — ${p.night.res === 'refuse' ? 'отказ' : 'исполнил'}<br>` : ''}<br><i>Журнал:</i><br>${p.log.slice(-12).map(esc).join('<br>')}`;
+  }
+  const chip = document.createElement('button'); chip.id = 'p22chip'; chip.type = 'button'; chip.textContent = 'ТЕСТ v2'; chip.title = 'Сюжет трёх сроков v2: скрытые числа';
+  chip.onclick = (e) => { e.stopPropagation(); let pn = $('p22panel'); if (pn) { pn.remove(); return; } pn = document.createElement('div'); pn.id = 'p22panel'; document.body.appendChild(pn); panel(); };
+  document.body.appendChild(chip);
+  setInterval(() => { if ($('p22panel')) panel(); }, 1000);
+  document.title = 'Кабинет · тест сюжета v2';
+  window.P22API = { P22, alive, verdict, LINES };
+})();
+</script>

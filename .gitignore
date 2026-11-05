@@ -38,3 +38,10 @@ __pycache__/
 .npm/
 .remotion/
 !.env.example
+
+# Кабинет · Пакет 22: сборки и результаты тестов (пересобираются)
+kabinet/work/plot-v2/shots/
+kabinet/work/plot-v2/kabinet_plot_v2.html
+kabinet/work/plot-v2/*_result.json
+kabinet/work/plot-v2/long_*.json
+kabinet/test/audit_cmp_*.json
